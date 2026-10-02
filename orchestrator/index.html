@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Orchestrator Agéntico Local v4.0 — Mapa Interactivo</title>
+<style>
+:root {
+  --bg:#071016; --panel:#0d1821; --panel2:#111f2a; --text:#e9f0f5; --muted:#99adbb;
+  --line:#34556b; --accent:#4fb3bf; --accent2:#81c995; --warn:#e8b86d; --shadow:0 12px 35px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+body{overflow:hidden}
+header{height:74px;display:flex;align-items:center;gap:16px;padding:0 20px;border-bottom:1px solid #20323f;background:rgba(7,16,22,.96);position:relative;z-index:5}
+.brand{display:flex;flex-direction:column;min-width:290px}
+.brand strong{font-size:18px;letter-spacing:.2px}
+.brand span{font-size:12px;color:var(--muted);margin-top:3px}
+.tools{display:flex;gap:8px;align-items:center;flex:1}
+button,input{font:inherit}
+button{background:#132431;color:var(--text);border:1px solid #294354;border-radius:9px;padding:8px 11px;cursor:pointer}
+button:hover{background:#193040}
+.search{margin-left:auto;display:flex;align-items:center;gap:8px;min-width:min(420px,40vw)}
+.search input{width:100%;background:#0b1620;color:var(--text);border:1px solid #294354;border-radius:9px;padding:9px 11px;outline:none}
+.layout{height:calc(100% - 74px);display:grid;grid-template-columns:minmax(0,1fr) 390px}
+.canvasWrap{position:relative;overflow:hidden;background:
+radial-gradient(circle at 20% 20%,rgba(79,179,191,.06),transparent 25%),
+radial-gradient(circle at 80% 70%,rgba(129,201,149,.05),transparent 30%),
+#071016}
+#canvas{width:100%;height:100%;cursor:grab}
+#canvas.dragging{cursor:grabbing}
+.panel{border-left:1px solid #20323f;background:linear-gradient(180deg,#0c1821,#09131b);overflow:auto;padding:22px}
+.panel .tag{display:inline-block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#b8dce1;background:#12303b;border:1px solid #255366;border-radius:999px;padding:5px 8px;margin-bottom:12px}
+.panel h2{font-size:23px;line-height:1.15;margin:0 0 12px}
+.panel p{color:#c4d1d9;line-height:1.55;margin:0 0 16px}
+.panel ul{padding-left:20px;color:#c4d1d9;line-height:1.5}
+.panel li{margin:7px 0}
+.path{font-size:12px;color:#7690a0;margin:14px 0 18px;line-height:1.45}
+.nodeActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.legend{position:absolute;left:16px;bottom:16px;background:rgba(10,21,29,.90);border:1px solid #294354;border-radius:10px;padding:10px 12px;color:#a9bac5;font-size:12px;box-shadow:var(--shadow);pointer-events:none}
+svg text{user-select:none}
+.link{fill:none;stroke:#3c6378;stroke-width:1.4;opacity:.75}
+.node rect{rx:10;ry:10;fill:#122633;stroke:#355466;stroke-width:1}
+.node.level1 rect{fill:#18313f;stroke:#4d7185}
+.node.root rect{fill:#304259;stroke:#6a88a3;stroke-width:1.5}
+.node.selected rect{stroke:#7ed9e0;stroke-width:2.2;filter:drop-shadow(0 0 7px rgba(126,217,224,.28))}
+.node.match rect{stroke:#f2c879;stroke-width:2.1}
+.node text{fill:#e8f0f4;font-size:13px;pointer-events:none}
+.node .small{fill:#9db0bc;font-size:10px}
+.node circle.toggle{fill:#0a141b;stroke:#5c8498;stroke-width:1.2;cursor:pointer}
+.node .toggleText{font-size:12px;font-weight:700;fill:#cfe8ed}
+.node{cursor:pointer}
+.badge{fill:#183443}
+.zoomCtl{position:absolute;right:16px;bottom:16px;display:flex;gap:7px}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .panel{position:absolute;right:0;top:0;bottom:0;width:min(390px,92vw);z-index:4;box-shadow:-10px 0 25px rgba(0,0,0,.35)}
+  .panel.hidden{display:none}
+  .brand{min-width:auto}
+  .search{min-width:0}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><strong>Orchestrator Agéntico Local v4.0</strong><span>Mapa maestro interactivo — Greenfield + Tiered Storage</span></div>
+  <div class="tools">
+    <button id="expandAll">Expandir todo</button>
+    <button id="collapseAll">Colapsar</button>
+    <button id="fit">Ajustar</button>
+    <div class="search"><input id="search" placeholder="Buscar componente, equipo, concepto…"></div>
+  </div>
+</header>
+<div class="layout">
+  <div class="canvasWrap">
+    <svg id="canvas"></svg>
+    <div class="legend">Clic en nodo: explicación · Clic en +/−: expandir/colapsar · Arrastrar: mover · Rueda: zoom</div>
+    <div class="zoomCtl"><button id="zin">＋</button><button id="zout">−</button><button id="zreset">100%</button></div>
+  </div>
+  <aside class="panel" id="panel">
+    <div class="tag" id="tag">Proyecto</div>
+    <h2 id="ptitle">Orchestrator Agéntico Local v4.0</h2>
+    <div class="path" id="ppath">Proyecto</div>
+    <p id="psummary"></p>
+    <ul id="pdetails"></ul>
+    <div class="nodeActions">
+      <button id="toggleBranch">Expandir rama</button>
+      <button id="copyText">Copiar explicación</button>
+    </div>
+  </aside>
+</div>
+<script>
+const DATA = {"id": "root", "title": "Orchestrator Agéntico Local v4.0", "tag": "Proyecto", "summary": "Plataforma local de empresa agéntica construida desde cero para coordinar equipos de agentes especializados con QA, PMO, seguridad, memoria, aprendizaje y continuidad persistente.", "details": ["Baseline arquitectónica: v4.0 Greenfield + Tiered Storage.", "Host inicial: Mac Studio M1 Max, 32 GB de memoria unificada.", "Estrategia: local-first, evidence-first, quality before speed.", "El Orchestrator anterior queda como LEGACY_REFERENCE_ONLY."], "children": [{"id": "vision", "title": "1. Propósito y Visión", "tag": "Dirección", "summary": "Construir una plataforma local capaz de recibir objetivos de alto nivel, organizar equipos de agentes, ejecutar trabajo, verificarlo y mantener continuidad del proyecto.", "details": ["Desarrollo greenfield desde cero.", "Calidad y certeza por sobre velocidad.", "Autonomía controlada; el usuario conserva autoridad sobre acciones críticas.", "Los agentes permanecen en STANDBY y se activan bajo demanda."], "children": [{"id": "greenfield", "title": "Greenfield", "summary": "El nuevo producto no se construye parchando el Orchestrator anterior.", "details": ["Repositorio nuevo.", "DB y migraciones desde v1.", "Tests desde el inicio.", "Seguridad, QA y observabilidad by design."]}, {"id": "localfirst", "title": "Local-first", "summary": "El sistema se ejecuta inicialmente en el Mac Studio, reduciendo dependencias externas.", "details": ["llama.cpp / llama-server como runtime local inicial.", "Modelos GGUF locales.", "VPS reservado como fase futura."]}, {"id": "quality", "title": "Quality before speed", "summary": "La métrica prioritaria es resultado verificado, no velocidad bruta.", "details": ["Evidencia y herramientas reales.", "Quality Gates.", "Revisión independiente.", "Golden Tasks y pruebas de regresión."]}, {"id": "human", "title": "Autoridad humana", "summary": "Acciones críticas no pueden autoaprobarse por consenso o timeout.", "details": ["Finanzas reales.", "Cambios críticos de seguridad.", "Publicaciones sensibles.", "Eliminación irreversible.", "Cambios de privilegios."]}]}, {"id": "core", "title": "2. Arquitectura Core", "tag": "Core", "summary": "El Orchestrator Core coordina planificación, agentes, workflows, permisos, contexto, QA, auditoría, recursos y continuidad.", "details": ["Diseño modular.", "State machines controladas.", "Workflows declarativos.", "Trazabilidad completa."], "children": [{"id": "pmo", "title": "PMO / Project Manager", "summary": "Mantiene el estado maestro y permite detener y retomar el proyecto sin depender del historial del chat.", "details": ["Gantt, WBS y backlog.", "Risks & Issues.", "Decision Log.", "Scope Register.", "Dependency Register.", "Deliverable Register.", "Current Checkpoint.", "Project Knowledge Index.", "Document Health.", "Protocolo RETOMAR PROYECTO."]}, {"id": "task", "title": "Task Manager", "summary": "Gestiona el ciclo de vida de las tareas y sus estados.", "details": ["CREATED, PLANNING, QUEUED, RUNNING, VERIFYING, WAITING_APPROVAL, BLOCKED, FAILED, DONE, CANCELLED, PAUSED.", "Dependencias y prioridades.", "Persistencia de estado."]}, {"id": "planner", "title": "Task Planner", "summary": "Descompone solicitudes complejas en subtareas y selecciona estrategia de ejecución.", "details": ["Objetivos y restricciones.", "Selección de equipo.", "Dependencias.", "Gates y checkpoints."]}, {"id": "teams", "title": "Team Manager", "summary": "Gestiona los equipos lógicos disponibles para cada tipo de trabajo.", "details": ["Composición del equipo.", "Activación bajo demanda.", "No implica cargar un modelo por agente."]}, {"id": "registry", "title": "Agent Registry", "summary": "Registro versionado de agentes, capacidades, herramientas, prompts y permisos.", "details": ["Role/system prompt.", "Allowed tools.", "Memory scope.", "Autonomy policy.", "Output schema."]}, {"id": "scheduler", "title": "Scheduler", "summary": "Decide qué agentes se activan y cuándo, respetando recursos y dependencias.", "details": ["STANDBY por defecto.", "Colas.", "Concurrencia limitada.", "Resource-aware scheduling."]}, {"id": "workflow", "title": "Workflow Engine", "summary": "Ejecuta procesos declarativos con pasos, gates, reintentos y handoffs.", "details": ["Dependencias.", "Condiciones.", "Retries acotados.", "Checkpoint/resume.", "Aprobaciones humanas.", "Handoffs estructurados."]}, {"id": "permission", "title": "Permission Engine", "summary": "Aplica mínimo privilegio y controla qué acciones puede realizar cada agente.", "details": ["AUTO.", "SUPERVISED.", "APPROVAL_REQUIRED.", "FORBIDDEN.", "Un agente no puede elevar sus propios privilegios."]}, {"id": "approval", "title": "Approval Engine", "summary": "Gestiona aprobaciones humanas para acciones de riesgo.", "details": ["REQUESTED, APPROVED, REJECTED, EXPIRED, CANCELLED.", "La ausencia de respuesta nunca significa aprobación."]}, {"id": "policy", "title": "Policy Engine", "summary": "Centraliza reglas empresariales, de seguridad, calidad y autonomía.", "details": ["Deny-by-default.", "Políticas versionadas.", "Aplicación antes de Tool Gateway."]}, {"id": "context", "title": "Context Manager", "summary": "Construye el contexto mínimo necesario para cada ejecución.", "details": ["Prioriza políticas, objetivo, requisitos, evidencia y estado.", "Evita inyectar repositorios o memorias completas sin necesidad.", "Perfiles de contexto sujetos a benchmark."]}, {"id": "memory", "title": "Memory Manager", "summary": "Administra memoria operativa y organizacional por ámbitos.", "details": ["Short-term.", "Task memory.", "Agent memory.", "Team memory.", "Project memory.", "Company memory.", "QA memory.", "Lessons Learned."]}, {"id": "knowledge", "title": "Knowledge Manager", "summary": "Gestiona conocimiento persistente, calidad, vigencia y procedencia.", "details": ["Provenance.", "Versionado.", "Retrieval por relevancia.", "No mezclar conocimiento sin control de calidad."]}, {"id": "qaengine", "title": "QA Engine", "summary": "Aplica los Quality Gates antes de aceptar un resultado.", "details": ["Cumplimiento de requisitos.", "Pruebas aplicables.", "Evidencia.", "Revisión independiente.", "Definition of Done."]}, {"id": "verify", "title": "Verification Engine", "summary": "Ejecuta comprobaciones determinísticas o basadas en herramientas.", "details": ["Tests.", "Linters.", "Schemas.", "Checksums.", "Validación de fuentes/evidencia."]}, {"id": "learning", "title": "Learning Engine", "summary": "Convierte errores confirmados en controles preventivos reutilizables.", "details": ["Error Registry.", "RCA.", "Correction.", "Preventive Control.", "Regression Test.", "Lesson Learned."]}, {"id": "audit", "title": "Audit Engine", "summary": "Registra qué ocurrió, quién lo ejecutó, con qué herramientas y qué evidencia produjo.", "details": ["Agent/task IDs.", "Tool calls.", "Model/prompt/workflow versions.", "Approvals.", "Security events.", "Resultados de QA."]}, {"id": "securitybus", "title": "Security Event Bus", "summary": "Canal central para eventos operacionales y de seguridad.", "details": ["AUTH_FAILURE.", "UNAUTHORIZED_TOOL.", "FILE_CHANGED.", "PORT_OPENED.", "PROCESS_CHANGED.", "PROMPT_INJECTION.", "SECRET_DETECTED.", "BACKUP_FAILURE.", "INTEGRITY_FAILURE."]}, {"id": "resource", "title": "Resource Manager", "summary": "Protege RAM, contexto, almacenamiento y concurrencia del host.", "details": ["Presupuesto de memoria.", "Presión de swap.", "Espacio interno/externo.", "Carga de modelos.", "Concurrencia inicial: un LLM grande."]}, {"id": "config", "title": "Configuration Manager", "summary": "Gestiona configuración tipada y separada por entorno.", "details": ["DEV / TEST / PROD.", "Validación al arranque.", "Sin rutas críticas dispersas en código."]}, {"id": "artifact", "title": "Artifact Manager", "summary": "Registra y gestiona archivos generados por tareas.", "details": ["Hash.", "Provenance.", "Classification.", "Retention.", "Storage tier."]}, {"id": "path", "title": "Path Resolver", "summary": "Abstrae las rutas internas y externas del almacenamiento.", "details": ["ORCH_LOCAL_ROOT.", "ORCH_EXT_ROOT.", "Protección contra path traversal.", "Validación de roots."]}]}, {"id": "runtime", "title": "3. Runtime e IA Local", "tag": "IA", "summary": "Capa que convierte un agente lógico en una ejecución real sobre modelos y herramientas locales.", "children": [{"id": "agentruntime", "title": "Agent Runtime", "summary": "Crea sesiones lógicas con rol, contexto, memoria, herramientas y permisos.", "details": ["No equivale a un proceso/modelo por agente.", "Output estructurado.", "Retry policy.", "Handoff."]}, {"id": "modelgw", "title": "Model Gateway", "summary": "Abstrae el acceso a llama-server y permite routing/versionado de modelos.", "details": ["Modelo y cuantización.", "Context profile.", "Generation parameters.", "Health/fallback."]}, {"id": "llama", "title": "llama-server", "summary": "Runtime inicial local basado en llama.cpp.", "details": ["Metal/Apple Silicon.", "GGUF.", "API local en loopback.", "Modelo activo registrado y versionado."]}, {"id": "modelproc", "title": "Model Process Manager", "summary": "Arranca, detiene y verifica el proceso del modelo.", "details": ["Health.", "PID/process state.", "Model identity.", "Configuración reproducible."]}, {"id": "toolgw", "title": "Tool Gateway", "summary": "Única vía autorizada de los agentes hacia herramientas y el sistema operativo.", "details": ["Filesystem.", "Git.", "Python.", "DB.", "Shell restringida.", "Media tools.", "Security tools.", "Contratos de tools."]}, {"id": "structured", "title": "Structured Output Validation", "summary": "Valida que las salidas del LLM cumplan schemas antes de ser consumidas por otros componentes.", "details": ["JSON/schema validation.", "Fail explicitly.", "No confiar en texto ambiguo."]}, {"id": "models", "title": "Model Lifecycle", "summary": "Gestiona modelos como activos versionados y evaluados.", "details": ["DISCOVERED.", "DOWNLOADED.", "TESTING.", "APPROVED.", "PRIMARY / SECONDARY.", "DEPRECATED / REMOVED.", "Golden Tasks antes de promoción."]}]}, {"id": "agents", "title": "4. Equipos de Agentes", "tag": "Organización", "summary": "Departamentos lógicos que se activan según el objetivo de la tarea.", "children": [{"id": "software", "title": "Software Engineering", "summary": "Diseña, implementa, prueba, revisa y documenta software.", "details": ["Product Manager.", "Architect.", "Tech Lead.", "Backend/Frontend.", "DB/Data.", "Security Engineer.", "Reviewer.", "QA.", "Debugger.", "DevOps.", "Documentation.", "Release Manager."]}, {"id": "commercial", "title": "Comercial", "summary": "Estrategia comercial, ventas, CRM, pricing y postventa.", "details": ["Director Comercial.", "Marketing.", "Sales.", "Customer Service.", "Post-sales.", "CRM Analyst.", "Pricing Analyst.", "Sales QA."]}, {"id": "comms", "title": "Comunicaciones", "summary": "Gestiona prensa, comunicaciones internas/externas y reputación.", "details": ["Director de Comunicaciones.", "Prensa.", "Comunicación interna/externa.", "RRSS.", "Periodista/Editor.", "Fact-check.", "Crisis Communications."]}, {"id": "content", "title": "Content Studio", "summary": "Produce y adapta contenido multimedia y multiplataforma.", "details": ["Guión/copy.", "Video corto/YouTube.", "Edición.", "Motion.", "Imagen IA.", "Audio/TTS.", "Subtítulos.", "Repurposing.", "SEO.", "Performance."]}, {"id": "finance", "title": "Finanzas supervisadas", "summary": "Analiza presupuesto, costos y forecasts sin ejecutar operaciones financieras autónomas.", "details": ["Finance Lead.", "Budget Analyst.", "Cost Analyst.", "Forecasting.", "Financial QA.", "Pagos/transferencias requieren aprobación humana explícita."]}, {"id": "qateam", "title": "QA / Governance", "summary": "Control transversal de calidad, políticas, evidencia y mejora continua.", "details": ["QA Lead.", "Verifier.", "Fact Checker.", "RCA Analyst.", "Process Improvement.", "Policy Auditor.", "Security Auditor."]}, {"id": "cyberteam", "title": "Cybersecurity", "summary": "Diseña y valida seguridad antes de producción.", "details": ["Security Lead.", "Security Architect.", "Threat Modeler.", "AppSec.", "AI Security.", "IAM.", "Secrets.", "Vulnerability.", "Security QA.", "Incident Response."]}, {"id": "secopsteam", "title": "SecOps", "summary": "Protección operacional del Mac Studio y del Orchestrator en ejecución.", "details": ["SecOps Lead.", "Secure SysAdmin.", "SOC Analyst.", "Endpoint.", "Patch/Config.", "Logs.", "Integrity.", "Backups.", "Incident Response.", "Forensics."]}]}, {"id": "workflows", "title": "5. Workflows y Orquestación", "tag": "Ejecución", "summary": "Define cómo colaboran los agentes y cómo se controla una tarea de extremo a extremo.", "details": ["PLAN → EXECUTE → VERIFY → CHALLENGE → CORRECT → VALIDATE → LEARN → IMPROVE."], "children": [{"id": "wdl", "title": "Workflow Definition Language", "summary": "Especificación declarativa de pasos, dependencias, gates y condiciones.", "details": ["Versionable.", "No hardcodear workflows en lógica dispersa."]}, {"id": "handoff", "title": "Agent Message Protocol", "summary": "Formato estructurado para transferir trabajo entre agentes.", "details": ["task_id.", "from_agent / to_agent.", "objective.", "requirements.", "constraints.", "artifacts.", "evidence.", "open_questions."]}, {"id": "tools", "title": "Tool Contracts", "summary": "Cada herramienta tiene contrato formal de entrada, salida, riesgo y permisos.", "details": ["Version.", "Input/output schema.", "Timeout.", "Retries.", "Allowed agents.", "Approval policy.", "Audit."]}, {"id": "retry", "title": "Retry & Escalation", "summary": "Evita loops infinitos y escala cuando un problema persiste.", "details": ["Intento inicial.", "Corrección con error concreto.", "Segundo intento.", "Reviewer/specialist.", "Escalación humana."]}, {"id": "conflict", "title": "Resolución de conflictos", "summary": "No se resuelve por mayoría de agentes.", "details": ["Evidencia > tests > fuentes autorizadas > políticas > reviewer independiente > humano."]}, {"id": "checkpoint", "title": "Checkpoint / Resume", "summary": "Permite pausar y continuar tareas largas con integridad.", "details": ["Estado actual.", "Workflow/version.", "Artifacts.", "Evidencia.", "Decisiones.", "Dependencias.", "Next action.", "Hashes/versiones."]}]}, {"id": "memknowledge", "title": "6. Memoria y Conocimiento", "tag": "Continuidad", "summary": "Mantiene contexto relevante sin saturar el modelo con toda la historia.", "children": [{"id": "memorylayers", "title": "Capas de memoria", "summary": "Memoria segmentada por alcance y responsabilidad.", "details": ["Short-term.", "Task.", "Agent.", "Team.", "Project.", "Company.", "QA."]}, {"id": "qamemory", "title": "QA Memory", "summary": "Da prioridad a errores y controles conocidos cuando son aplicables.", "details": ["Error patterns.", "Preventive controls.", "Regression tests.", "Lessons Learned."]}, {"id": "kb", "title": "Knowledge Base", "summary": "Repositorio de conocimiento con provenance y control de calidad.", "details": ["Fuentes.", "Versiones.", "Vigencia.", "Clasificación."]}, {"id": "retrieval", "title": "Retrieval relevante", "summary": "Sólo se recupera información pertinente a la tarea actual.", "details": ["Task/team/risk/error pattern.", "Evitar inyección masiva de memoria."]}]}, {"id": "governance", "title": "7. Gobierno y Control", "tag": "Gobierno", "summary": "Controla autoridad, riesgos, cambios y trazabilidad del sistema.", "children": [{"id": "autonomy", "title": "Niveles de autonomía", "summary": "Cada acción se clasifica por riesgo y autoridad.", "details": ["AUTO.", "SUPERVISED.", "APPROVAL_REQUIRED.", "FORBIDDEN."]}, {"id": "critical", "title": "Acciones críticas", "summary": "Operaciones sensibles requieren intervención humana o están prohibidas.", "details": ["Finanzas.", "Contratos.", "Cambios de privilegios.", "Borrado irreversible.", "Deploy crítico.", "Publicación reputacionalmente sensible."]}, {"id": "change", "title": "Change Management", "summary": "Los cambios de alcance o arquitectura generan análisis de impacto antes de incorporarse.", "details": ["Alcance.", "Arquitectura.", "Seguridad.", "Gantt.", "Riesgos.", "Tests.", "Documentación."]}, {"id": "dod", "title": "Definition of Done", "summary": "Una tarea no está DONE sólo porque un agente diga que terminó.", "details": ["Requisitos satisfechos.", "Artifacts.", "Tests.", "QA.", "Evidencia.", "Sin findings críticos.", "Docs.", "Approvals.", "Checkpoint."]}]}, {"id": "qualitybranch", "title": "8. QA, Verificación y Aprendizaje", "tag": "Calidad", "summary": "Sistema transversal para reducir errores y aprender de fallas confirmadas.", "children": [{"id": "qg", "title": "Quality Gates", "summary": "Puntos obligatorios de control antes de aceptar o promover trabajo.", "details": ["Requirements.", "Evidence.", "Independent review.", "Security.", "Acceptance."]}, {"id": "evidence", "title": "Evidence-first", "summary": "Las afirmaciones críticas deben estar respaldadas por evidencia real.", "details": ["Archivos/lineas.", "Tests.", "Tool outputs.", "Fuentes autorizadas.", "Checksums."]}, {"id": "errorreg", "title": "Error Registry", "summary": "Registro estructurado de fallas confirmadas.", "details": ["Categoría/severidad.", "Expected vs observed.", "Evidence.", "Root cause.", "Correction.", "Preventive control.", "Regression test."]}, {"id": "rca", "title": "Root Cause Analysis", "summary": "HIGH/CRITICAL requieren análisis formal de causa raíz.", "details": ["No sólo corregir síntoma.", "Convertir causa en control preventivo."]}, {"id": "lessons", "title": "Lessons Learned", "summary": "Memoria organizacional de errores y controles.", "details": ["Rule.", "Applicable agents/tools.", "Validation.", "Version."]}, {"id": "golden", "title": "Golden Tasks", "summary": "Casos conocidos para detectar regresiones en modelos, prompts, tools y workflows.", "details": ["Coding.", "Review.", "Reasoning.", "Research.", "Fact-check.", "Structured output.", "Tool calling.", "Hallucination resistance."]}]}, {"id": "pmoBranch", "title": "9. PMO y Continuidad", "tag": "PMO", "summary": "Gobierno del proyecto y reconstrucción fiable del estado.", "children": [{"id": "pmostatus", "title": "Project Status", "summary": "Estado ejecutivo actual del proyecto."}, {"id": "pmogantt", "title": "Gantt + WBS + Backlog", "summary": "Planificación, descomposición del trabajo y pendientes."}, {"id": "pmorisk", "title": "Risks & Issues", "summary": "Riesgos, problemas activos y mitigaciones."}, {"id": "pmodecision", "title": "Decision Log", "summary": "Decisiones cerradas y su fundamento."}, {"id": "pmoscope", "title": "Scope Register", "summary": "IN_SCOPE, OUT_OF_SCOPE, FUTURE_SCOPE y LEGACY_REFERENCE_ONLY."}, {"id": "pmodep", "title": "Dependency Register", "summary": "Dependencias entre componentes, tareas y recursos."}, {"id": "pmodeliv", "title": "Deliverable Register", "summary": "Entregables y estado de aceptación."}, {"id": "pmoindex", "title": "Project Knowledge Index", "summary": "Inventario operativo de documentación vigente."}, {"id": "pmoresume", "title": "RETOMAR PROYECTO", "summary": "Protocolo de reinicio: reconstruye estado desde fuentes persistentes, no desde memoria del chat.", "details": ["Leer Source of Truth.", "Checkpoint.", "Status.", "Gantt/backlog.", "Risks.", "Decisions.", "Cambios recientes.", "Next action."]}]}, {"id": "cyber", "title": "10. Cybersecurity", "tag": "Security", "summary": "Seguridad preventiva y pre-producción independiente del equipo de desarrollo.", "children": [{"id": "threat", "title": "Threat Modeling", "summary": "Identifica amenazas y controles antes de producción.", "details": ["Prompt injection.", "Tool abuse.", "Memory poisoning.", "Privilege escalation.", "Data exfiltration."]}, {"id": "appsec", "title": "AppSec", "summary": "Seguridad del software y dependencias.", "details": ["Code review.", "Dependency/SBOM.", "Secrets.", "Supply chain."]}, {"id": "iam", "title": "IAM y mínimo privilegio", "summary": "Identidades, permisos y separación de responsabilidades."}, {"id": "secrets", "title": "Secrets Management", "summary": "Evita exposición de secretos en código, logs, prompts y artifacts."}, {"id": "securitygate", "title": "Security Gate", "summary": "Bloquea PROD ante findings HIGH/CRITICAL no resueltos.", "details": ["Threat model.", "Permissions.", "Secrets.", "Dependencies.", "Audit.", "Backup/restore.", "Rollback.", "AI security tests."]}]}, {"id": "secops", "title": "11. SecOps Local", "tag": "Operations", "summary": "Protección operacional del Mac Studio y Orchestrator local.", "children": [{"id": "endpoint", "title": "Host / Endpoint", "summary": "Monitoreo y hardening del Mac Studio."}, {"id": "process", "title": "Procesos y puertos", "summary": "Detecta cambios, procesos inesperados y exposición de servicios."}, {"id": "integrity", "title": "File Integrity", "summary": "Detecta modificaciones relevantes en archivos/configuración."}, {"id": "logs", "title": "Logs & Events", "summary": "Correlación de eventos operacionales y de seguridad."}, {"id": "backup", "title": "Backup Administration", "summary": "Supervisa backups y pruebas de restauración."}, {"id": "incident", "title": "Incident Response", "summary": "Respuesta por niveles a eventos de seguridad.", "details": ["L1 automático reversible.", "L2 supervisado.", "L3 aprobación humana."]}]}, {"id": "storage", "title": "12. Almacenamiento por Niveles", "tag": "Storage", "summary": "Separa estado crítico de activos voluminosos para proteger el SSD interno y mantener estabilidad.", "children": [{"id": "tier0", "title": "SSD interno — TIER-0", "summary": "Estado crítico y runtime que debe permanecer disponible incluso si el externo falla.", "details": ["Core.", "Binarios.", "venv.", "Config.", "DB activa.", "State/checkpoints.", "Audit activo.", "Logs activos.", "Queues/locks."]}, {"id": "tier1", "title": "SSD externo rápido — TIER-1", "summary": "Capacidad para datos y activos de gran volumen.", "details": ["Modelos.", "Embeddings.", "Knowledge.", "Projects.", "Artifacts.", "Datasets.", "Multimedia.", "Caches.", "Logs archive.", "Backups del Core."]}, {"id": "tier2", "title": "TIER-2 futuro", "summary": "Segunda copia independiente para datos únicos del SSD externo.", "details": ["Un único SSD externo no es backup de sí mismo."]}, {"id": "roots", "title": "ORCH_LOCAL_ROOT / ORCH_EXT_ROOT", "summary": "Abstracción para no hardcodear nombres de discos o rutas físicas."}, {"id": "volumeid", "title": "External Volume Identity", "summary": "Verifica que el volumen montado sea realmente el esperado antes de escribir."}, {"id": "degraded", "title": "Degraded Mode", "summary": "Si el SSD externo no está disponible, el Core sigue operativo pero bloquea tareas dependientes del externo.", "details": ["PMO/DB/config/audit siguen disponibles.", "Model/knowledge/artifact operations quedan bloqueadas.", "Sin copia silenciosa al SSD interno."]}]}, {"id": "deployment", "title": "13. Entornos, CI/CD y Producción", "tag": "Delivery", "summary": "Separación y promoción controlada de DEV, TEST y PROD.", "children": [{"id": "envs", "title": "DEV / TEST / PROD", "summary": "Configuración, DB, logs y artifacts separados por entorno."}, {"id": "cicd", "title": "CI/CD local", "summary": "Pipeline de calidad previo a promociones.", "details": ["Lint.", "Unit.", "Integration.", "Migrations.", "Security.", "Golden Tasks.", "TEST.", "Acceptance.", "PROD."]}, {"id": "upgrade", "title": "Upgrade / Rollback", "summary": "Toda actualización importante debe poder revertirse.", "details": ["Code.", "DB.", "Prompt.", "Workflow.", "Model.", "Runtime."]}, {"id": "health", "title": "Health Checks", "summary": "Estado de Core, runtime, DB, storage, tools, audit y security.", "details": ["HEALTHY.", "DEGRADED.", "UNHEALTHY."]}, {"id": "readiness", "title": "Production Readiness", "summary": "Checklist de preparación antes de declarar PROD.", "details": ["Security Gate.", "Backup/restore.", "Rollback.", "Storage benchmark.", "Acceptance."]}]}, {"id": "implementation", "title": "14. Implementación y Próximos Pasos", "tag": "Roadmap", "summary": "Orden de construcción greenfield del producto.", "children": [{"id": "phase0", "title": "Fase 0 — Preflight", "summary": "Registrar baseline del Mac, seleccionar SSD externo, medirlo y crear los roots."}, {"id": "phase1", "title": "Fase 1 — Fundaciones", "summary": "Config, Path Resolver, DB schema v1, migrations, state machine, registries y audit."}, {"id": "phase2", "title": "Fase 2 — Runtime", "summary": "Model Gateway, Agent Runtime, Scheduler, Workflow Engine, checkpoint/resume."}, {"id": "phase3", "title": "Fase 3 — Gobierno", "summary": "PMO, Permission, Approval y Policy Engine."}, {"id": "phase4", "title": "Fase 4 — Memoria/Knowledge", "summary": "Context, Memory y Knowledge Manager."}, {"id": "phase5", "title": "Fase 5 — QA/Learning", "summary": "QA, Verification, Error Registry, RCA y Lessons Learned."}, {"id": "phase6", "title": "Fases 6–7 — Security/SecOps", "summary": "Cybersecurity, Security Gate y operación segura local."}, {"id": "phase8", "title": "Fase 8 — Software MVP", "summary": "Primer vertical end-to-end con Golden Tasks y aceptación."}, {"id": "phase9", "title": "Fase 9 — Producción local", "summary": "TEST→PROD, backup/restore, rollback y readiness."}, {"id": "future", "title": "Futuro", "summary": "Expansión a equipos empresariales y posterior diseño VPS."}]}]};
+const svg = document.getElementById('canvas');
+const NS='http://www.w3.org/2000/svg';
+let selected=DATA, query='', scale=1, tx=35, ty=30, dragging=false, sx=0, sy=0, stx=0, sty=0;
+let collapsed=new Set();
+
+function walk(n, parent=null, path=[]){
+  n._parent=parent; n._path=[...path,n.title];
+  (n.children||[]).forEach(c=>walk(c,n,n._path));
+}
+walk(DATA);
+
+function visibleChildren(n){ return collapsed.has(n.id)?[]:(n.children||[]); }
+function textMatch(n,q){
+  if(!q) return false;
+  const s=[n.title,n.summary,...(n.details||[])].join(' ').toLowerCase();
+  return s.includes(q.toLowerCase());
+}
+
+function layoutTree(){
+  const nodes=[], links=[]; let leaf=0;
+  function calc(n,depth){
+    const ch=visibleChildren(n);
+    let y;
+    if(!ch.length) y=leaf++*56;
+    else {
+      const ys=ch.map(c=>calc(c,depth+1));
+      y=(Math.min(...ys)+Math.max(...ys))/2;
+    }
+    const x=depth*270;
+    nodes.push({n,x,y,depth});
+    ch.forEach(c=>links.push([n,c]));
+    return y;
+  }
+  calc(DATA,0);
+  const pos=new Map(nodes.map(o=>[o.n.id,o]));
+  return {nodes,links,pos,width:Math.max(...nodes.map(o=>o.x))+260,height:Math.max(leaf*56,500)};
+}
+
+function el(name,attrs={}){
+  const e=document.createElementNS(NS,name);
+  for(const [k,v] of Object.entries(attrs)) e.setAttribute(k,v);
+  return e;
+}
+
+function render(){
+  svg.innerHTML='';
+  const g=el('g',{transform:`translate(${tx},${ty}) scale(${scale})`});
+  svg.appendChild(g);
+  const L=layoutTree();
+  L.links.forEach(([a,b])=>{
+    const A=L.pos.get(a.id), B=L.pos.get(b.id);
+    const x1=A.x+210,y1=A.y+20,x2=B.x,y2=B.y+20,m=(x1+x2)/2;
+    g.appendChild(el('path',{class:'link',d:`M ${x1} ${y1} C ${m} ${y1}, ${m} ${y2}, ${x2} ${y2}`}));
+  });
+  L.nodes.forEach(o=>{
+    const n=o.n, group=el('g',{class:`node ${o.depth===0?'root':''} ${o.depth===1?'level1':''} ${selected.id===n.id?'selected':''} ${textMatch(n,query)?'match':''}`,transform:`translate(${o.x},${o.y})`});
+    const w=210,h=40;
+    group.appendChild(el('rect',{width:w,height:h}));
+    const t=el('text',{x:12,y:25});
+    let label=n.title.length>29?n.title.slice(0,28)+'…':n.title;
+    t.textContent=label; group.appendChild(t);
+    if((n.children||[]).length){
+      const c=el('circle',{class:'toggle',cx:w+18,cy:20,r:12});
+      const tt=el('text',{class:'toggleText',x:w+18,y:24,'text-anchor':'middle'});
+      tt.textContent=collapsed.has(n.id)?'+':'−';
+      c.addEventListener('click',e=>{e.stopPropagation();toggle(n);});
+      group.appendChild(c); group.appendChild(tt);
+    }
+    group.addEventListener('click',()=>selectNode(n));
+    g.appendChild(group);
+  });
+}
+
+function selectNode(n){
+  selected=n;
+  document.getElementById('tag').textContent=n.tag || (n._parent?.tag || 'Componente');
+  document.getElementById('ptitle').textContent=n.title;
+  document.getElementById('ppath').textContent=n._path.join('  ›  ');
+  document.getElementById('psummary').textContent=n.summary || 'Sin descripción adicional.';
+  const ul=document.getElementById('pdetails'); ul.innerHTML='';
+  (n.details||[]).forEach(d=>{const li=document.createElement('li');li.textContent=d;ul.appendChild(li);});
+  document.getElementById('toggleBranch').textContent=collapsed.has(n.id)?'Expandir rama':'Colapsar rama';
+  render();
+}
+function toggle(n){
+  if(collapsed.has(n.id)) collapsed.delete(n.id); else collapsed.add(n.id);
+  render(); if(selected.id===n.id) selectNode(n);
+}
+document.getElementById('toggleBranch').onclick=()=>toggle(selected);
+document.getElementById('expandAll').onclick=()=>{collapsed.clear();render();};
+document.getElementById('collapseAll').onclick=()=>{
+  collapsed.clear();
+  function rec(n){if((n.children||[]).length && n!==DATA) collapsed.add(n.id);(n.children||[]).forEach(rec)} rec(DATA); render();
+};
+document.getElementById('search').addEventListener('input',e=>{query=e.target.value.trim(); if(query) collapsed.clear(); render();});
+document.getElementById('copyText').onclick=async()=>{
+  const txt=[selected.title,selected.summary,...(selected.details||[])].filter(Boolean).join('\n• ');
+  try{await navigator.clipboard.writeText(txt); document.getElementById('copyText').textContent='Copiado'; setTimeout(()=>document.getElementById('copyText').textContent='Copiar explicación',1200)}catch(e){}
+};
+
+function apply(){render();}
+document.getElementById('zin').onclick=()=>{scale=Math.min(2.4,scale*1.15);apply()};
+document.getElementById('zout').onclick=()=>{scale=Math.max(.28,scale/1.15);apply()};
+document.getElementById('zreset').onclick=()=>{scale=1;tx=35;ty=30;apply()};
+document.getElementById('fit').onclick=()=>{
+  const L=layoutTree(), r=svg.getBoundingClientRect();
+  scale=Math.max(.28,Math.min(1,(r.width-80)/(L.width+80),(r.height-80)/(L.height+80)));
+  tx=30;ty=30;apply();
+};
+
+svg.addEventListener('wheel',e=>{
+  e.preventDefault();
+  const factor=e.deltaY<0?1.1:1/1.1;
+  const rect=svg.getBoundingClientRect(), mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  const ns=Math.max(.28,Math.min(2.5,scale*factor));
+  tx=mx-(mx-tx)*(ns/scale); ty=my-(my-ty)*(ns/scale); scale=ns; apply();
+},{passive:false});
+svg.addEventListener('mousedown',e=>{dragging=true;svg.classList.add('dragging');sx=e.clientX;sy=e.clientY;stx=tx;sty=ty;});
+window.addEventListener('mousemove',e=>{if(!dragging)return;tx=stx+(e.clientX-sx);ty=sty+(e.clientY-sy);apply();});
+window.addEventListener('mouseup',()=>{dragging=false;svg.classList.remove('dragging')});
+
+selectNode(DATA);
+setTimeout(()=>document.getElementById('fit').click(),100);
+</script>
+</body>
+</html>
