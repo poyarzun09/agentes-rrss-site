@@ -1,0 +1,490 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Implementación — Agentia Handbook</title><style>
+:root{--bg:#071018;--p:#0e1a23;--p2:#11232e;--line:#294655;--text:#e8eff3;--muted:#94a9b5;--accent:#64bdc8;--good:#83c89a;--warn:#e0b36b}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;line-height:1.55}
+header{position:sticky;top:0;z-index:20;background:#08131b;border-bottom:1px solid #203a48;padding:12px 18px;display:flex;gap:18px;align-items:center}.brand{font-weight:800;color:#fff;text-decoration:none;white-space:nowrap}.brand small{display:block;font-size:10px;color:var(--muted);font-weight:500}header nav{display:flex;gap:5px;flex-wrap:wrap}header nav a{color:#bcd0da;text-decoration:none;padding:7px 9px;border-radius:8px;font-size:12px}header nav a:hover{background:#15303c;color:#fff}
+main{max-width:1240px;margin:auto;padding:25px 24px 70px}.hero,.article{background:var(--p);border:1px solid #203d4b;border-radius:15px;padding:20px;margin-bottom:15px}.hero{background:linear-gradient(135deg,#102734,#0c1c26)}h1{margin:4px 0 8px;font-size:31px}h2{margin:0 0 10px;font-size:21px}h3{font-size:15px;margin:18px 0 7px;color:#d7e7ed}.eyebrow{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#86cbd2}.muted,.breadcrumb{color:var(--muted);font-size:12px}.breadcrumb a{color:#9fc1cd}.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}.badge{border:1px solid #31576a;border-radius:999px;padding:4px 8px;font-size:10px;color:#bed4de}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.full{grid-column:1/-1}.card{background:var(--p);border:1px solid #203d4b;border-radius:13px;padding:16px}.card p,.card li,.article p,.article li{color:#c0d0d8}.card ul,.card ol,.article ul,.article ol{padding-left:21px}.callout{border-left:3px solid var(--accent);background:#0d222c;border-radius:9px;padding:10px 12px;color:#c3d4dc}.warn{border-color:var(--warn);background:#251f15}.good{border-color:var(--good);background:#102219}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px}.step{background:#132c39;border:1px solid #365e70;border-radius:9px;padding:8px 10px;font-size:12px}.arrow{color:#668897}.diagram{background:#09151d;border:1px solid #213c4a;border-radius:12px;padding:14px;overflow:auto}.lane{display:grid;grid-template-columns:145px 1fr;gap:10px;align-items:center;margin:9px 0}.lane b{font-size:11px;color:#86a2b1;text-transform:uppercase;letter-spacing:.06em}.lane div{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.node{display:inline-block;color:#d8e7ed;background:#132c39;border:1px solid #365e70;border-radius:9px;padding:7px 9px;text-decoration:none;font-size:12px}.node:hover{background:#1b3b49}
+.function{scroll-margin-top:85px}.function:target{border-color:#6db7c4;box-shadow:0 0 0 1px #6db7c4}.cols{display:grid;grid-template-columns:170px 1fr;gap:7px 12px}.cols dt{color:#89a2af;font-weight:700}.cols dd{margin:0;color:#c1d0d7}.rels a,.subf a{display:inline-block;margin:3px 4px 3px 0}.source{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:#b9cbd4}.index{columns:3;column-gap:18px}.index a{display:block;break-inside:avoid;color:#bcd4de;text-decoration:none;padding:4px 0;font-size:12px}.index a:hover{color:#fff}
+footer{border-top:1px solid #203846;color:#7f98a5;text-align:center;padding:18px;font-size:11px}
+@media(max-width:850px){header{position:relative;align-items:flex-start;flex-direction:column}.grid{grid-template-columns:1fr}.full{grid-column:auto}.lane{grid-template-columns:1fr}.cols{grid-template-columns:1fr}.index{columns:1}main{padding:16px}}
+</style></head><body><header><a class="brand" href="index.html">Agentia Handbook <small>Orchestrator Agéntico Local v4.0</small></a><nav>
+<a href="index.html">Inicio</a><a href="architecture.html">Arquitectura</a><a href="runtime.html">Flujos</a><a href="core.html">Core</a><a href="teams.html">Equipos</a><a href="infrastructure.html">Infraestructura</a><a href="governance.html">Gobierno/QA/Seguridad</a><a href="implementation.html">Implementación</a><a href="reference.html">A–Z</a>
+</nav></header><main><section class="hero"><div class="eyebrow">implementation</div><h1>Visión e Implementación Greenfield</h1><p>Principios, decisiones de baseline y plan de construcción desde cero.</p></section>
+ <section class="card"><h2>Índice de esta sección</h2><div class="subf"><a class="node" href="#fn-vision">1. Propósito y Visión</a><a class="node" href="#fn-greenfield">Desarrollo desde cero (Greenfield)</a><a class="node" href="#fn-localfirst">Operación local como principio base</a><a class="node" href="#fn-quality">Calidad y certeza antes que velocidad</a><a class="node" href="#fn-human">Autoridad humana</a><a class="node" href="#fn-implementation">14. Plan de construcción y próximos pasos</a><a class="node" href="#fn-imp0">Fase 0 — Preflight greenfield</a><a class="node" href="#fn-imp1">Fase 1 — Fundaciones</a><a class="node" href="#fn-imp2">Fase 2 — Runtime</a><a class="node" href="#fn-imp4">Fases 8–9 — MVP y producción local</a></div></section>
+ <article class="article function" id="fn-vision">
+ <div class="eyebrow">implementation</div><h2>1. Propósito y Visión</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-vision">1. Propósito y Visión</a></div>
+ <p>Construir una plataforma local capaz de recibir objetivos de alto nivel, organizar equipos de agentes, ejecutar trabajo, verificarlo y mantener continuidad del proyecto.</p>
+ <div class="badges"><span class="badge">ID vision</span><span class="badge">4 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «1. Propósito y Visión» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definición funcional suficiente para diseño. Implementación y contratos exactos siguen TO-BE.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Desarrollo greenfield desde cero.</li><li>Calidad y certeza por sobre velocidad.</li><li>Autonomía controlada; el usuario conserva autoridad sobre acciones críticas.</li><li>Los agentes permanecen en STANDBY y se activan bajo demanda.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="flow"><span class="step">Recibir entrada/contexto</span><span class="arrow">→</span><span class="step">Coordinar subfunciones: Desarrollo desde cero (Greenfield), Operación local como principio base, Calidad y certeza antes que velocidad, Autoridad humana</span><span class="arrow">→</span><span class="step">Consolidar resultado</span><span class="arrow">→</span><span class="step">Aplicar controles</span><span class="arrow">→</span><span class="step">Entregar salida</span></div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><a class="node" href="implementation.html#fn-greenfield">Desarrollo desde cero (Greenfield)</a><a class="node" href="implementation.html#fn-localfirst">Operación local como principio base</a><a class="node" href="implementation.html#fn-quality">Calidad y certeza antes que velocidad</a><a class="node" href="implementation.html#fn-human">Autoridad humana</a></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-greenfield">
+ <div class="eyebrow">implementation</div><h2>Desarrollo desde cero (Greenfield)</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-vision">1. Propósito y Visión</a> › <a href="implementation.html#fn-greenfield">Desarrollo desde cero (Greenfield)</a></div>
+ <p>El nuevo producto no se construye parchando el Orchestrator anterior.</p>
+ <div class="badges"><span class="badge">ID greenfield</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Desarrollo desde cero (Greenfield)» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definición funcional suficiente para diseño. Implementación y contratos exactos siguen TO-BE.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Repositorio nuevo.</li><li>DB y migraciones desde v1.</li><li>Tests desde el inicio.</li><li>Seguridad, QA y observabilidad by design.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-vision">1. Propósito y Visión</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-localfirst">
+ <div class="eyebrow">implementation</div><h2>Operación local como principio base</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-vision">1. Propósito y Visión</a> › <a href="implementation.html#fn-localfirst">Operación local como principio base</a></div>
+ <p>El sistema se ejecuta inicialmente en el Mac Studio, reduciendo dependencias externas.</p>
+ <div class="badges"><span class="badge">ID localfirst</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Operación local como principio base» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definición funcional suficiente para diseño. Implementación y contratos exactos siguen TO-BE.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>llama.cpp / llama-server como runtime local inicial.</li><li>Modelos GGUF locales.</li><li>VPS reservado como fase futura.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-vision">1. Propósito y Visión</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-quality">
+ <div class="eyebrow">implementation</div><h2>Calidad y certeza antes que velocidad</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-vision">1. Propósito y Visión</a> › <a href="implementation.html#fn-quality">Calidad y certeza antes que velocidad</a></div>
+ <p>La métrica prioritaria es resultado verificado, no velocidad bruta.</p>
+ <div class="badges"><span class="badge">ID quality</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Calidad y certeza antes que velocidad» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definición funcional suficiente para diseño. Implementación y contratos exactos siguen TO-BE.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Evidencia y herramientas reales.</li><li>Quality Gates.</li><li>Revisión independiente.</li><li>Golden Tasks y pruebas de regresión.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-vision">1. Propósito y Visión</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-human">
+ <div class="eyebrow">implementation</div><h2>Autoridad humana</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-vision">1. Propósito y Visión</a> › <a href="implementation.html#fn-human">Autoridad humana</a></div>
+ <p>Acciones críticas no pueden autoaprobarse por consenso o timeout.</p>
+ <div class="badges"><span class="badge">ID human</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Autoridad humana» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definición funcional suficiente para diseño. Implementación y contratos exactos siguen TO-BE.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Finanzas reales.</li><li>Cambios críticos de seguridad.</li><li>Publicaciones sensibles.</li><li>Eliminación irreversible.</li><li>Cambios de privilegios.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-vision">1. Propósito y Visión</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-implementation">
+ <div class="eyebrow">implementation</div><h2>14. Plan de construcción y próximos pasos</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a></div>
+ <p>Plan de construcción del entorno completamente nuevo. No existe una etapa para modificar o migrar el Orchestrator actual; cada fase corresponde al nuevo repositorio, nuevas configuraciones y nueva persistencia.</p>
+ <div class="badges"><span class="badge">ID implementation</span><span class="badge">5 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «14. Plan de construcción y próximos pasos» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definición funcional suficiente para diseño. Implementación y contratos exactos siguen TO-BE.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Fase 0 — Preflight greenfield — Preparar el entorno nuevo sin tocar el Orchestrator actual.</li><li>Fase 1 — Fundaciones — Construir la base técnica.</li><li>Fase 2 — Runtime — Conectar agentes con modelo local.</li><li>Fases 3–7 — Gobierno, memoria, QA y seguridad — Completar controles empresariales.</li><li>Fases 8–9 — MVP y producción local — Probar el primer vertical completo.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="flow"><span class="step">Recibir entrada/contexto</span><span class="arrow">→</span><span class="step">Coordinar subfunciones: Fase 0 — Preflight greenfield, Fase 1 — Fundaciones, Fase 2 — Runtime, Fases 3–7 — Gobierno, memoria, QA y seguridad, Fases 8–9 — MVP y producción local</span><span class="arrow">→</span><span class="step">Consolidar resultado</span><span class="arrow">→</span><span class="step">Aplicar controles</span><span class="arrow">→</span><span class="step">Entregar salida</span></div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><a class="node" href="implementation.html#fn-imp0">Fase 0 — Preflight greenfield</a><a class="node" href="implementation.html#fn-imp1">Fase 1 — Fundaciones</a><a class="node" href="implementation.html#fn-imp2">Fase 2 — Runtime</a><a class="node" href="governance.html#fn-imp3">Fases 3–7 — Gobierno, memoria, QA y seguridad</a><a class="node" href="implementation.html#fn-imp4">Fases 8–9 — MVP y producción local</a></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-imp0">
+ <div class="eyebrow">implementation</div><h2>Fase 0 — Preflight greenfield</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a> › <a href="implementation.html#fn-imp0">Fase 0 — Preflight greenfield</a></div>
+ <p>Preparar el entorno nuevo sin tocar el Orchestrator actual.</p>
+ <div class="badges"><span class="badge">ID imp0</span><span class="badge">4 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Fase 0 — Preflight greenfield» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definición funcional suficiente para diseño. Implementación y contratos exactos siguen TO-BE.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Baseline del Mac — macOS, espacio, toolchain y recursos.</li><li>SSD externo — Seleccionar, benchmarkear y validar estabilidad.</li><li>Roots — Definir ORCH_LOCAL_ROOT y ORCH_EXT_ROOT.</li><li>Repositorio nuevo — Crear Git repo, venv y skeleton desde cero.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="flow"><span class="step">Recibir entrada/contexto</span><span class="arrow">→</span><span class="step">Coordinar subfunciones: Baseline del Mac, SSD externo, Roots, Repositorio nuevo</span><span class="arrow">→</span><span class="step">Consolidar resultado</span><span class="arrow">→</span><span class="step">Aplicar controles</span><span class="arrow">→</span><span class="step">Entregar salida</span></div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><a class="node" href="implementation.html#fn-imp0-mac">Baseline del Mac</a><a class="node" href="implementation.html#fn-imp0-ssd">SSD externo</a><a class="node" href="implementation.html#fn-imp0-roots">Roots</a><a class="node" href="implementation.html#fn-imp0-repo">Repositorio nuevo</a></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-imp0-mac">
+ <div class="eyebrow">implementation</div><h2>Baseline del Mac</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a> › <a href="implementation.html#fn-imp0">Fase 0 — Preflight greenfield</a> › <a href="implementation.html#fn-imp0-mac">Baseline del Mac</a></div>
+ <p>macOS, espacio, toolchain y recursos.</p>
+ <div class="badges"><span class="badge">ID imp0-mac</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Baseline del Mac» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>macOS, espacio, toolchain y recursos.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-imp0">Fase 0 — Preflight greenfield</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-imp0-ssd">
+ <div class="eyebrow">implementation</div><h2>SSD externo</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a> › <a href="implementation.html#fn-imp0">Fase 0 — Preflight greenfield</a> › <a href="implementation.html#fn-imp0-ssd">SSD externo</a></div>
+ <p>Seleccionar, benchmarkear y validar estabilidad.</p>
+ <div class="badges"><span class="badge">ID imp0-ssd</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «SSD externo» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Seleccionar, benchmarkear y validar estabilidad.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-imp0">Fase 0 — Preflight greenfield</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-imp0-roots">
+ <div class="eyebrow">implementation</div><h2>Roots</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a> › <a href="implementation.html#fn-imp0">Fase 0 — Preflight greenfield</a> › <a href="implementation.html#fn-imp0-roots">Roots</a></div>
+ <p>Definir ORCH_LOCAL_ROOT y ORCH_EXT_ROOT.</p>
+ <div class="badges"><span class="badge">ID imp0-roots</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Roots» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Definir ORCH_LOCAL_ROOT y ORCH_EXT_ROOT.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-imp0">Fase 0 — Preflight greenfield</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-imp0-repo">
+ <div class="eyebrow">implementation</div><h2>Repositorio nuevo</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a> › <a href="implementation.html#fn-imp0">Fase 0 — Preflight greenfield</a> › <a href="implementation.html#fn-imp0-repo">Repositorio nuevo</a></div>
+ <p>Crear Git repo, venv y skeleton desde cero.</p>
+ <div class="badges"><span class="badge">ID imp0-repo</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Repositorio nuevo» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Crear Git repo, venv y skeleton desde cero.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-imp0">Fase 0 — Preflight greenfield</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-imp1">
+ <div class="eyebrow">implementation</div><h2>Fase 1 — Fundaciones</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a> › <a href="implementation.html#fn-imp1">Fase 1 — Fundaciones</a></div>
+ <p>Construir la base técnica.</p>
+ <div class="badges"><span class="badge">ID imp1</span><span class="badge">4 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Fase 1 — Fundaciones» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definición funcional suficiente para diseño. Implementación y contratos exactos siguen TO-BE.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Config y Path Resolver — Primera capa de infraestructura.</li><li>DB schema v1 + migration 0001 — Persistencia desde cero.</li><li>State machines — Task/Agent/Approval.</li><li>Audit mínimo — Trazabilidad desde el principio.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="flow"><span class="step">Recibir entrada/contexto</span><span class="arrow">→</span><span class="step">Coordinar subfunciones: Config y Path Resolver, DB schema v1 + migration 0001, State machines, Audit mínimo</span><span class="arrow">→</span><span class="step">Consolidar resultado</span><span class="arrow">→</span><span class="step">Aplicar controles</span><span class="arrow">→</span><span class="step">Entregar salida</span></div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><a class="node" href="implementation.html#fn-imp1-config">Config y Path Resolver</a><a class="node" href="implementation.html#fn-imp1-db">DB schema v1 + migration 0001</a><a class="node" href="implementation.html#fn-imp1-state">State machines</a><a class="node" href="implementation.html#fn-imp1-audit">Audit mínimo</a></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-imp1-config">
+ <div class="eyebrow">implementation</div><h2>Config y Path Resolver</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a> › <a href="implementation.html#fn-imp1">Fase 1 — Fundaciones</a> › <a href="implementation.html#fn-imp1-config">Config y Path Resolver</a></div>
+ <p>Primera capa de infraestructura.</p>
+ <div class="badges"><span class="badge">ID imp1-config</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Config y Path Resolver» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Primera capa de infraestructura.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-imp1">Fase 1 — Fundaciones</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-imp1-db">
+ <div class="eyebrow">implementation</div><h2>DB schema v1 + migration 0001</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a> › <a href="implementation.html#fn-imp1">Fase 1 — Fundaciones</a> › <a href="implementation.html#fn-imp1-db">DB schema v1 + migration 0001</a></div>
+ <p>Persistencia desde cero.</p>
+ <div class="badges"><span class="badge">ID imp1-db</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «DB schema v1 + migration 0001» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Persistencia desde cero.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-imp1">Fase 1 — Fundaciones</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-imp1-state">
+ <div class="eyebrow">implementation</div><h2>State machines</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a> › <a href="implementation.html#fn-imp1">Fase 1 — Fundaciones</a> › <a href="implementation.html#fn-imp1-state">State machines</a></div>
+ <p>Task/Agent/Approval.</p>
+ <div class="badges"><span class="badge">ID imp1-state</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «State machines» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Task/Agent/Approval.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-imp1">Fase 1 — Fundaciones</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-imp1-audit">
+ <div class="eyebrow">implementation</div><h2>Audit mínimo</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a> › <a href="implementation.html#fn-imp1">Fase 1 — Fundaciones</a> › <a href="implementation.html#fn-imp1-audit">Audit mínimo</a></div>
+ <p>Trazabilidad desde el principio.</p>
+ <div class="badges"><span class="badge">ID imp1-audit</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Audit mínimo» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Trazabilidad desde el principio.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-imp1">Fase 1 — Fundaciones</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-imp2">
+ <div class="eyebrow">implementation</div><h2>Fase 2 — Runtime</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a> › <a href="implementation.html#fn-imp2">Fase 2 — Runtime</a></div>
+ <p>Conectar agentes con modelo local.</p>
+ <div class="badges"><span class="badge">ID imp2</span><span class="badge">4 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Fase 2 — Runtime» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definición funcional suficiente para diseño. Implementación y contratos exactos siguen TO-BE.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Model Gateway / llama-server — Inferencia controlada.</li><li>Agent Runtime — Sesiones lógicas.</li><li>Scheduler — Activación según recursos.</li><li>Workflow Engine — Orquestación y checkpoints.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="flow"><span class="step">Recibir entrada/contexto</span><span class="arrow">→</span><span class="step">Coordinar subfunciones: Model Gateway / llama-server, Agent Runtime, Scheduler, Workflow Engine</span><span class="arrow">→</span><span class="step">Consolidar resultado</span><span class="arrow">→</span><span class="step">Aplicar controles</span><span class="arrow">→</span><span class="step">Entregar salida</span></div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><a class="node" href="implementation.html#fn-imp2-model">Model Gateway / llama-server</a><a class="node" href="implementation.html#fn-imp2-agent">Agent Runtime</a><a class="node" href="implementation.html#fn-imp2-sched">Scheduler</a><a class="node" href="implementation.html#fn-imp2-wf">Workflow Engine</a></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-imp2-model">
+ <div class="eyebrow">implementation</div><h2>Model Gateway / llama-server</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a> › <a href="implementation.html#fn-imp2">Fase 2 — Runtime</a> › <a href="implementation.html#fn-imp2-model">Model Gateway / llama-server</a></div>
+ <p>Inferencia controlada.</p>
+ <div class="badges"><span class="badge">ID imp2-model</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Model Gateway / llama-server» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Inferencia controlada.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-imp2">Fase 2 — Runtime</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-imp2-agent">
+ <div class="eyebrow">implementation</div><h2>Agent Runtime</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a> › <a href="implementation.html#fn-imp2">Fase 2 — Runtime</a> › <a href="implementation.html#fn-imp2-agent">Agent Runtime</a></div>
+ <p>Sesiones lógicas.</p>
+ <div class="badges"><span class="badge">ID imp2-agent</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Agent Runtime» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Sesiones lógicas.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-imp2">Fase 2 — Runtime</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>DEFINED, STANDBY, QUEUED, RUNNING, WAITING_TOOL, WAITING_APPROVAL, VERIFYING, BLOCKED, FAILED, DONE.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-imp2-sched">
+ <div class="eyebrow">implementation</div><h2>Scheduler</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a> › <a href="implementation.html#fn-imp2">Fase 2 — Runtime</a> › <a href="implementation.html#fn-imp2-sched">Scheduler</a></div>
+ <p>Activación según recursos.</p>
+ <div class="badges"><span class="badge">ID imp2-sched</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Scheduler» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Activación según recursos.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-imp2">Fase 2 — Runtime</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-imp2-wf">
+ <div class="eyebrow">implementation</div><h2>Workflow Engine</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a> › <a href="implementation.html#fn-imp2">Fase 2 — Runtime</a> › <a href="implementation.html#fn-imp2-wf">Workflow Engine</a></div>
+ <p>Orquestación y checkpoints.</p>
+ <div class="badges"><span class="badge">ID imp2-wf</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Workflow Engine» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Orquestación y checkpoints.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-imp2">Fase 2 — Runtime</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-imp4">
+ <div class="eyebrow">implementation</div><h2>Fases 8–9 — MVP y producción local</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a> › <a href="implementation.html#fn-imp4">Fases 8–9 — MVP y producción local</a></div>
+ <p>Probar el primer vertical completo.</p>
+ <div class="badges"><span class="badge">ID imp4</span><span class="badge">3 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Fases 8–9 — MVP y producción local» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definición funcional suficiente para diseño. Implementación y contratos exactos siguen TO-BE.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Software Team MVP — Primer flujo end-to-end.</li><li>Acceptance — Golden Tasks y criterios de sistema.</li><li>PROD local — Promoción sólo con readiness aprobado.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="flow"><span class="step">Recibir entrada/contexto</span><span class="arrow">→</span><span class="step">Coordinar subfunciones: Software Team MVP, Acceptance, PROD local</span><span class="arrow">→</span><span class="step">Consolidar resultado</span><span class="arrow">→</span><span class="step">Aplicar controles</span><span class="arrow">→</span><span class="step">Entregar salida</span></div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><a class="node" href="implementation.html#fn-imp4-sw">Software Team MVP</a><a class="node" href="implementation.html#fn-imp4-accept">Acceptance</a><a class="node" href="implementation.html#fn-imp4-prod">PROD local</a></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-imp4-sw">
+ <div class="eyebrow">implementation</div><h2>Software Team MVP</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a> › <a href="implementation.html#fn-imp4">Fases 8–9 — MVP y producción local</a> › <a href="implementation.html#fn-imp4-sw">Software Team MVP</a></div>
+ <p>Primer flujo end-to-end.</p>
+ <div class="badges"><span class="badge">ID imp4-sw</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Software Team MVP» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Primer flujo end-to-end.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-imp4">Fases 8–9 — MVP y producción local</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-imp4-accept">
+ <div class="eyebrow">implementation</div><h2>Acceptance</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a> › <a href="implementation.html#fn-imp4">Fases 8–9 — MVP y producción local</a> › <a href="implementation.html#fn-imp4-accept">Acceptance</a></div>
+ <p>Golden Tasks y criterios de sistema.</p>
+ <div class="badges"><span class="badge">ID imp4-accept</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Acceptance» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Golden Tasks y criterios de sistema.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-imp4">Fases 8–9 — MVP y producción local</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-imp4-prod">
+ <div class="eyebrow">implementation</div><h2>PROD local</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="implementation.html#fn-implementation">14. Plan de construcción y próximos pasos</a> › <a href="implementation.html#fn-imp4">Fases 8–9 — MVP y producción local</a> › <a href="implementation.html#fn-imp4-prod">PROD local</a></div>
+ <p>Promoción sólo con readiness aprobado.</p>
+ <div class="badges"><span class="badge">ID imp4-prod</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «PROD local» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Promoción sólo con readiness aprobado.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="implementation.html#fn-imp4">Fases 8–9 — MVP y producción local</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Workflow decide retry limitado, corrección, bloqueo o escalamiento. Repetir indefinidamente el mismo intento está prohibido.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>task_id / step_id</li><li>input relevante</li><li>resultado estructurado</li><li>estado antes/después</li><li>timestamp</li><li>artifact/evidence refs</li></ul></section>
+  
+ </div>
+ </article></main><footer>Agentia / Orchestrator Agéntico Local v4.0 · documentación estática · baseline de diseño greenfield</footer></body></html>

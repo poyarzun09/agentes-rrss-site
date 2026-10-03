@@ -1,0 +1,699 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Infraestructura — Agentia Handbook</title><style>
+:root{--bg:#071018;--p:#0e1a23;--p2:#11232e;--line:#294655;--text:#e8eff3;--muted:#94a9b5;--accent:#64bdc8;--good:#83c89a;--warn:#e0b36b}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;line-height:1.55}
+header{position:sticky;top:0;z-index:20;background:#08131b;border-bottom:1px solid #203a48;padding:12px 18px;display:flex;gap:18px;align-items:center}.brand{font-weight:800;color:#fff;text-decoration:none;white-space:nowrap}.brand small{display:block;font-size:10px;color:var(--muted);font-weight:500}header nav{display:flex;gap:5px;flex-wrap:wrap}header nav a{color:#bcd0da;text-decoration:none;padding:7px 9px;border-radius:8px;font-size:12px}header nav a:hover{background:#15303c;color:#fff}
+main{max-width:1240px;margin:auto;padding:25px 24px 70px}.hero,.article{background:var(--p);border:1px solid #203d4b;border-radius:15px;padding:20px;margin-bottom:15px}.hero{background:linear-gradient(135deg,#102734,#0c1c26)}h1{margin:4px 0 8px;font-size:31px}h2{margin:0 0 10px;font-size:21px}h3{font-size:15px;margin:18px 0 7px;color:#d7e7ed}.eyebrow{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#86cbd2}.muted,.breadcrumb{color:var(--muted);font-size:12px}.breadcrumb a{color:#9fc1cd}.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}.badge{border:1px solid #31576a;border-radius:999px;padding:4px 8px;font-size:10px;color:#bed4de}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.full{grid-column:1/-1}.card{background:var(--p);border:1px solid #203d4b;border-radius:13px;padding:16px}.card p,.card li,.article p,.article li{color:#c0d0d8}.card ul,.card ol,.article ul,.article ol{padding-left:21px}.callout{border-left:3px solid var(--accent);background:#0d222c;border-radius:9px;padding:10px 12px;color:#c3d4dc}.warn{border-color:var(--warn);background:#251f15}.good{border-color:var(--good);background:#102219}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px}.step{background:#132c39;border:1px solid #365e70;border-radius:9px;padding:8px 10px;font-size:12px}.arrow{color:#668897}.diagram{background:#09151d;border:1px solid #213c4a;border-radius:12px;padding:14px;overflow:auto}.lane{display:grid;grid-template-columns:145px 1fr;gap:10px;align-items:center;margin:9px 0}.lane b{font-size:11px;color:#86a2b1;text-transform:uppercase;letter-spacing:.06em}.lane div{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.node{display:inline-block;color:#d8e7ed;background:#132c39;border:1px solid #365e70;border-radius:9px;padding:7px 9px;text-decoration:none;font-size:12px}.node:hover{background:#1b3b49}
+.function{scroll-margin-top:85px}.function:target{border-color:#6db7c4;box-shadow:0 0 0 1px #6db7c4}.cols{display:grid;grid-template-columns:170px 1fr;gap:7px 12px}.cols dt{color:#89a2af;font-weight:700}.cols dd{margin:0;color:#c1d0d7}.rels a,.subf a{display:inline-block;margin:3px 4px 3px 0}.source{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:#b9cbd4}.index{columns:3;column-gap:18px}.index a{display:block;break-inside:avoid;color:#bcd4de;text-decoration:none;padding:4px 0;font-size:12px}.index a:hover{color:#fff}
+footer{border-top:1px solid #203846;color:#7f98a5;text-align:center;padding:18px;font-size:11px}
+@media(max-width:850px){header{position:relative;align-items:flex-start;flex-direction:column}.grid{grid-template-columns:1fr}.full{grid-column:auto}.lane{grid-template-columns:1fr}.cols{grid-template-columns:1fr}.index{columns:1}main{padding:16px}}
+</style></head><body><header><a class="brand" href="index.html">Agentia Handbook <small>Orchestrator Agéntico Local v4.0</small></a><nav>
+<a href="index.html">Inicio</a><a href="architecture.html">Arquitectura</a><a href="runtime.html">Flujos</a><a href="core.html">Core</a><a href="teams.html">Equipos</a><a href="infrastructure.html">Infraestructura</a><a href="governance.html">Gobierno/QA/Seguridad</a><a href="implementation.html">Implementación</a><a href="reference.html">A–Z</a>
+</nav></header><main><section class="hero"><div class="eyebrow">infrastructure</div><h1>Infraestructura y Deployment</h1><p>Host, almacenamiento, entornos, CI/CD y comportamiento degradado.</p></section>
+ <section class="card"><h2>Índice de esta sección</h2><div class="subf"><a class="node" href="#fn-storage">12. Almacenamiento por Niveles</a><a class="node" href="#fn-st-tier0">TIER-0 — SSD interno</a><a class="node" href="#fn-st-tier1">TIER-1 — SSD externo rápido</a><a class="node" href="#fn-st-identity">Identidad del volumen</a><a class="node" href="#fn-st-degraded">Modo degradado</a><a class="node" href="#fn-st-tier2">TIER-2 futuro</a><a class="node" href="#fn-deployment">13. Entornos de desarrollo, pruebas y producción</a><a class="node" href="#fn-dep-dev">DEV</a><a class="node" href="#fn-dep-test">TEST</a><a class="node" href="#fn-dep-prod">PROD</a><a class="node" href="#fn-dep-ci">CI/CD local</a></div></section>
+ <article class="article function" id="fn-storage">
+ <div class="eyebrow">infrastructure</div><h2>12. Almacenamiento por Niveles</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a></div>
+ <p>El nuevo entorno se diseñará desde el primer día con dos niveles. El SSD interno conservará sólo Core, runtime y estado crítico; el SSD externo rápido alojará modelos, conocimiento, proyectos, artifacts, datasets y multimedia. La ubicación se resolverá por configuración, no por rutas fijas.</p>
+ <div class="badges"><span class="badge">ID storage</span><span class="badge">5 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «12. Almacenamiento por Niveles» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definición funcional suficiente para diseño. Implementación y contratos exactos siguen TO-BE.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>TIER-0 — SSD interno — Sólo Core y estado crítico.</li><li>TIER-1 — SSD externo rápido — Capacidad de gran volumen.</li><li>Identidad del volumen — Evita escribir en un disco equivocado.</li><li>Modo degradado — El Core sigue disponible si falta el externo.</li><li>TIER-2 futuro — Segunda copia independiente para datos únicos.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="flow"><span class="step">Recibir entrada/contexto</span><span class="arrow">→</span><span class="step">Coordinar subfunciones: TIER-0 — SSD interno, TIER-1 — SSD externo rápido, Identidad del volumen, Modo degradado, TIER-2 futuro</span><span class="arrow">→</span><span class="step">Consolidar resultado</span><span class="arrow">→</span><span class="step">Aplicar controles</span><span class="arrow">→</span><span class="step">Entregar salida</span></div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><a class="node" href="infrastructure.html#fn-st-tier0">TIER-0 — SSD interno</a><a class="node" href="infrastructure.html#fn-st-tier1">TIER-1 — SSD externo rápido</a><a class="node" href="infrastructure.html#fn-st-identity">Identidad del volumen</a><a class="node" href="infrastructure.html#fn-st-degraded">Modo degradado</a><a class="node" href="infrastructure.html#fn-st-tier2">TIER-2 futuro</a></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  <section class="card full"><h3>Ejemplo didáctico</h3><div class="callout">El SSD externo se desconecta. DB, config, PMO, checkpoints y audit siguen en TIER-0; sólo se bloquean tareas dependientes de modelos/knowledge/artifacts externos. No se copia contenido pesado al interno.</div></section>
+ </div>
+ </article><article class="article function" id="fn-st-tier0">
+ <div class="eyebrow">infrastructure</div><h2>TIER-0 — SSD interno</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a> › <a href="infrastructure.html#fn-st-tier0">TIER-0 — SSD interno</a></div>
+ <p>Sólo Core y estado crítico.</p>
+ <div class="badges"><span class="badge">ID st-tier0</span><span class="badge">3 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «TIER-0 — SSD interno» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definición funcional suficiente para diseño. Implementación y contratos exactos siguen TO-BE.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Runtime — Código activo, binarios y venv.</li><li>Estado — DB, state, checkpoints y queues.</li><li>Control — Config, audit y logs activos.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="flow"><span class="step">Recibir entrada/contexto</span><span class="arrow">→</span><span class="step">Coordinar subfunciones: Runtime, Estado, Control</span><span class="arrow">→</span><span class="step">Consolidar resultado</span><span class="arrow">→</span><span class="step">Aplicar controles</span><span class="arrow">→</span><span class="step">Entregar salida</span></div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><a class="node" href="infrastructure.html#fn-st-tier0-code">Runtime</a><a class="node" href="infrastructure.html#fn-st-tier0-data">Estado</a><a class="node" href="infrastructure.html#fn-st-tier0-log">Control</a></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-st-tier0-code">
+ <div class="eyebrow">infrastructure</div><h2>Runtime</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a> › <a href="infrastructure.html#fn-st-tier0">TIER-0 — SSD interno</a> › <a href="infrastructure.html#fn-st-tier0-code">Runtime</a></div>
+ <p>Código activo, binarios y venv.</p>
+ <div class="badges"><span class="badge">ID st-tier0-code</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Runtime» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Código activo, binarios y venv.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-st-tier0">TIER-0 — SSD interno</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-st-tier0-data">
+ <div class="eyebrow">infrastructure</div><h2>Estado</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a> › <a href="infrastructure.html#fn-st-tier0">TIER-0 — SSD interno</a> › <a href="infrastructure.html#fn-st-tier0-data">Estado</a></div>
+ <p>DB, state, checkpoints y queues.</p>
+ <div class="badges"><span class="badge">ID st-tier0-data</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Estado» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>DB, state, checkpoints y queues.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-st-tier0">TIER-0 — SSD interno</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-st-tier0-log">
+ <div class="eyebrow">infrastructure</div><h2>Control</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a> › <a href="infrastructure.html#fn-st-tier0">TIER-0 — SSD interno</a> › <a href="infrastructure.html#fn-st-tier0-log">Control</a></div>
+ <p>Config, audit y logs activos.</p>
+ <div class="badges"><span class="badge">ID st-tier0-log</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Control» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Config, audit y logs activos.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-st-tier0">TIER-0 — SSD interno</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-st-tier1">
+ <div class="eyebrow">infrastructure</div><h2>TIER-1 — SSD externo rápido</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a> › <a href="infrastructure.html#fn-st-tier1">TIER-1 — SSD externo rápido</a></div>
+ <p>Capacidad de gran volumen.</p>
+ <div class="badges"><span class="badge">ID st-tier1</span><span class="badge">4 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «TIER-1 — SSD externo rápido» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definición funcional suficiente para diseño. Implementación y contratos exactos siguen TO-BE.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Modelos — GGUF, embeddings y modelos auxiliares.</li><li>Knowledge y proyectos — Corpus, projects y datasets.</li><li>Artifacts — Documentos, imágenes, audio y video.</li><li>Backups — Copias del TIER-0 e históricos.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="flow"><span class="step">Recibir entrada/contexto</span><span class="arrow">→</span><span class="step">Coordinar subfunciones: Modelos, Knowledge y proyectos, Artifacts, Backups</span><span class="arrow">→</span><span class="step">Consolidar resultado</span><span class="arrow">→</span><span class="step">Aplicar controles</span><span class="arrow">→</span><span class="step">Entregar salida</span></div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><a class="node" href="infrastructure.html#fn-st-tier1-model">Modelos</a><a class="node" href="infrastructure.html#fn-st-tier1-knowledge">Knowledge y proyectos</a><a class="node" href="infrastructure.html#fn-st-tier1-art">Artifacts</a><a class="node" href="infrastructure.html#fn-st-tier1-backup">Backups</a></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-st-tier1-model">
+ <div class="eyebrow">infrastructure</div><h2>Modelos</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a> › <a href="infrastructure.html#fn-st-tier1">TIER-1 — SSD externo rápido</a> › <a href="infrastructure.html#fn-st-tier1-model">Modelos</a></div>
+ <p>GGUF, embeddings y modelos auxiliares.</p>
+ <div class="badges"><span class="badge">ID st-tier1-model</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Modelos» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>GGUF, embeddings y modelos auxiliares.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-st-tier1">TIER-1 — SSD externo rápido</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-st-tier1-knowledge">
+ <div class="eyebrow">infrastructure</div><h2>Knowledge y proyectos</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a> › <a href="infrastructure.html#fn-st-tier1">TIER-1 — SSD externo rápido</a> › <a href="infrastructure.html#fn-st-tier1-knowledge">Knowledge y proyectos</a></div>
+ <p>Corpus, projects y datasets.</p>
+ <div class="badges"><span class="badge">ID st-tier1-knowledge</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Knowledge y proyectos» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Corpus, projects y datasets.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-st-tier1">TIER-1 — SSD externo rápido</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-st-tier1-art">
+ <div class="eyebrow">infrastructure</div><h2>Artifacts</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a> › <a href="infrastructure.html#fn-st-tier1">TIER-1 — SSD externo rápido</a> › <a href="infrastructure.html#fn-st-tier1-art">Artifacts</a></div>
+ <p>Documentos, imágenes, audio y video.</p>
+ <div class="badges"><span class="badge">ID st-tier1-art</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Artifacts» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Documentos, imágenes, audio y video.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-st-tier1">TIER-1 — SSD externo rápido</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-st-tier1-backup">
+ <div class="eyebrow">infrastructure</div><h2>Backups</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a> › <a href="infrastructure.html#fn-st-tier1">TIER-1 — SSD externo rápido</a> › <a href="infrastructure.html#fn-st-tier1-backup">Backups</a></div>
+ <p>Copias del TIER-0 e históricos.</p>
+ <div class="badges"><span class="badge">ID st-tier1-backup</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Backups» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Copias del TIER-0 e históricos.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-st-tier1">TIER-1 — SSD externo rápido</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-st-identity">
+ <div class="eyebrow">infrastructure</div><h2>Identidad del volumen</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a> › <a href="infrastructure.html#fn-st-identity">Identidad del volumen</a></div>
+ <p>Evita escribir en un disco equivocado.</p>
+ <div class="badges"><span class="badge">ID st-identity</span><span class="badge">3 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Identidad del volumen» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definición funcional suficiente para diseño. Implementación y contratos exactos siguen TO-BE.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>ORCH_EXT_ROOT — Ruta lógica configurada.</li><li>.orchestrator-volume-id — Marker validado antes de escribir.</li><li>Estado — HEALTHY, READ_ONLY, LOW_SPACE, MISSING o IDENTITY_MISMATCH.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="flow"><span class="step">Recibir entrada/contexto</span><span class="arrow">→</span><span class="step">Coordinar subfunciones: ORCH_EXT_ROOT, .orchestrator-volume-id, Estado</span><span class="arrow">→</span><span class="step">Consolidar resultado</span><span class="arrow">→</span><span class="step">Aplicar controles</span><span class="arrow">→</span><span class="step">Entregar salida</span></div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><a class="node" href="infrastructure.html#fn-st-identity-root">ORCH_EXT_ROOT</a><a class="node" href="infrastructure.html#fn-st-identity-marker">.orchestrator-volume-id</a><a class="node" href="infrastructure.html#fn-st-identity-status">Estado</a></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-st-identity-root">
+ <div class="eyebrow">infrastructure</div><h2>ORCH_EXT_ROOT</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a> › <a href="infrastructure.html#fn-st-identity">Identidad del volumen</a> › <a href="infrastructure.html#fn-st-identity-root">ORCH_EXT_ROOT</a></div>
+ <p>Ruta lógica configurada.</p>
+ <div class="badges"><span class="badge">ID st-identity-root</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «ORCH_EXT_ROOT» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Ruta lógica configurada.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-st-identity">Identidad del volumen</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-st-identity-marker">
+ <div class="eyebrow">infrastructure</div><h2>.orchestrator-volume-id</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a> › <a href="infrastructure.html#fn-st-identity">Identidad del volumen</a> › <a href="infrastructure.html#fn-st-identity-marker">.orchestrator-volume-id</a></div>
+ <p>Marker validado antes de escribir.</p>
+ <div class="badges"><span class="badge">ID st-identity-marker</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «.orchestrator-volume-id» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Marker validado antes de escribir.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-st-identity">Identidad del volumen</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-st-identity-status">
+ <div class="eyebrow">infrastructure</div><h2>Estado</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a> › <a href="infrastructure.html#fn-st-identity">Identidad del volumen</a> › <a href="infrastructure.html#fn-st-identity-status">Estado</a></div>
+ <p>HEALTHY, READ_ONLY, LOW_SPACE, MISSING o IDENTITY_MISMATCH.</p>
+ <div class="badges"><span class="badge">ID st-identity-status</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Estado» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>HEALTHY, READ_ONLY, LOW_SPACE, MISSING o IDENTITY_MISMATCH.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-st-identity">Identidad del volumen</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-st-degraded">
+ <div class="eyebrow">infrastructure</div><h2>Modo degradado</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a> › <a href="infrastructure.html#fn-st-degraded">Modo degradado</a></div>
+ <p>El Core sigue disponible si falta el externo.</p>
+ <div class="badges"><span class="badge">ID st-degraded</span><span class="badge">3 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Modo degradado» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definición funcional suficiente para diseño. Implementación y contratos exactos siguen TO-BE.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Disponible — PMO, DB, config, audit y diagnóstico.</li><li>Bloqueado — Modelos, knowledge, projects y artifacts externos.</li><li>Regla — Nunca copiar silenciosamente volumen al SSD interno.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="flow"><span class="step">Detectar TIER-1 ausente</span><span class="arrow">→</span><span class="step">Validar TIER-0</span><span class="arrow">→</span><span class="step">Marcar DEGRADED</span><span class="arrow">→</span><span class="step">Mantener Core/PMO/DB</span><span class="arrow">→</span><span class="step">Bloquear dependencias externas</span><span class="arrow">→</span><span class="step">Esperar volumen correcto</span><span class="arrow">→</span><span class="step">Revalidar identidad</span><span class="arrow">→</span><span class="step">Reanudar</span></div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><a class="node" href="core.html#fn-path">Gestión segura de rutas de almacenamiento</a><a class="node" href="core.html#fn-resource">Gestión de RAM, contexto y recursos</a><a class="node" href="core.html#fn-pmo">PMO y Gerencia del Proyecto</a></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><a class="node" href="infrastructure.html#fn-st-degraded-ok">Disponible</a><a class="node" href="infrastructure.html#fn-st-degraded-block">Bloqueado</a><a class="node" href="infrastructure.html#fn-st-degraded-rule">Regla</a></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-st-degraded-ok">
+ <div class="eyebrow">infrastructure</div><h2>Disponible</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a> › <a href="infrastructure.html#fn-st-degraded">Modo degradado</a> › <a href="infrastructure.html#fn-st-degraded-ok">Disponible</a></div>
+ <p>PMO, DB, config, audit y diagnóstico.</p>
+ <div class="badges"><span class="badge">ID st-degraded-ok</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Disponible» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>PMO, DB, config, audit y diagnóstico.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-st-degraded">Modo degradado</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-st-degraded-block">
+ <div class="eyebrow">infrastructure</div><h2>Bloqueado</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a> › <a href="infrastructure.html#fn-st-degraded">Modo degradado</a> › <a href="infrastructure.html#fn-st-degraded-block">Bloqueado</a></div>
+ <p>Modelos, knowledge, projects y artifacts externos.</p>
+ <div class="badges"><span class="badge">ID st-degraded-block</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Bloqueado» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Modelos, knowledge, projects y artifacts externos.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-st-degraded">Modo degradado</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-st-degraded-rule">
+ <div class="eyebrow">infrastructure</div><h2>Regla</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a> › <a href="infrastructure.html#fn-st-degraded">Modo degradado</a> › <a href="infrastructure.html#fn-st-degraded-rule">Regla</a></div>
+ <p>Nunca copiar silenciosamente volumen al SSD interno.</p>
+ <div class="badges"><span class="badge">ID st-degraded-rule</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Regla» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Nunca copiar silenciosamente volumen al SSD interno.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-st-degraded">Modo degradado</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-st-tier2">
+ <div class="eyebrow">infrastructure</div><h2>TIER-2 futuro</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a> › <a href="infrastructure.html#fn-st-tier2">TIER-2 futuro</a></div>
+ <p>Segunda copia independiente para datos únicos.</p>
+ <div class="badges"><span class="badge">ID st-tier2</span><span class="badge">1 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «TIER-2 futuro» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definición funcional suficiente para diseño. Implementación y contratos exactos siguen TO-BE.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Principio — Un SSD externo no puede ser backup de sí mismo.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="flow"><span class="step">Recibir entrada/contexto</span><span class="arrow">→</span><span class="step">Coordinar subfunciones: Principio</span><span class="arrow">→</span><span class="step">Consolidar resultado</span><span class="arrow">→</span><span class="step">Aplicar controles</span><span class="arrow">→</span><span class="step">Entregar salida</span></div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><a class="node" href="infrastructure.html#fn-st-tier2-rule">Principio</a></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-st-tier2-rule">
+ <div class="eyebrow">infrastructure</div><h2>Principio</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-storage">12. Almacenamiento por Niveles</a> › <a href="infrastructure.html#fn-st-tier2">TIER-2 futuro</a> › <a href="infrastructure.html#fn-st-tier2-rule">Principio</a></div>
+ <p>Un SSD externo no puede ser backup de sí mismo.</p>
+ <div class="badges"><span class="badge">ID st-tier2-rule</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Principio» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Un SSD externo no puede ser backup de sí mismo.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-st-tier2">TIER-2 futuro</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-deployment">
+ <div class="eyebrow">infrastructure</div><h2>13. Entornos de desarrollo, pruebas y producción</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-deployment">13. Entornos de desarrollo, pruebas y producción</a></div>
+ <p>El nuevo proyecto se construirá con tres entornos desde el inicio. Cada uno tendrá su propia configuración, DB, logs y estado; compartirán recursos pesados cuando sea seguro, pero nunca mezclarán datos operacionales de PROD con pruebas.</p>
+ <div class="badges"><span class="badge">ID deployment</span><span class="badge">4 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «13. Entornos de desarrollo, pruebas y producción» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definición funcional suficiente para diseño. Implementación y contratos exactos siguen TO-BE.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>DEV — Entorno de construcción.</li><li>TEST — Entorno para integración y aceptación.</li><li>PROD — Operación local estable.</li><li>CI/CD local — Automatiza control de calidad.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="flow"><span class="step">Recibir entrada/contexto</span><span class="arrow">→</span><span class="step">Coordinar subfunciones: DEV, TEST, PROD, CI/CD local</span><span class="arrow">→</span><span class="step">Consolidar resultado</span><span class="arrow">→</span><span class="step">Aplicar controles</span><span class="arrow">→</span><span class="step">Entregar salida</span></div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><a class="node" href="infrastructure.html#fn-dep-dev">DEV</a><a class="node" href="infrastructure.html#fn-dep-test">TEST</a><a class="node" href="infrastructure.html#fn-dep-prod">PROD</a><a class="node" href="infrastructure.html#fn-dep-ci">CI/CD local</a></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-dep-dev">
+ <div class="eyebrow">infrastructure</div><h2>DEV</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-deployment">13. Entornos de desarrollo, pruebas y producción</a> › <a href="infrastructure.html#fn-dep-dev">DEV</a></div>
+ <p>Entorno de construcción.</p>
+ <div class="badges"><span class="badge">ID dep-dev</span><span class="badge">2 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «DEV» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definición funcional suficiente para diseño. Implementación y contratos exactos siguen TO-BE.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>DB DEV — Independiente de TEST y PROD.</li><li>Config DEV — Valores y límites propios.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="flow"><span class="step">Recibir entrada/contexto</span><span class="arrow">→</span><span class="step">Coordinar subfunciones: DB DEV, Config DEV</span><span class="arrow">→</span><span class="step">Consolidar resultado</span><span class="arrow">→</span><span class="step">Aplicar controles</span><span class="arrow">→</span><span class="step">Entregar salida</span></div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-deployment">13. Entornos de desarrollo, pruebas y producción</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><a class="node" href="infrastructure.html#fn-dep-dev-db">DB DEV</a><a class="node" href="infrastructure.html#fn-dep-dev-config">Config DEV</a></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-dep-dev-db">
+ <div class="eyebrow">infrastructure</div><h2>DB DEV</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-deployment">13. Entornos de desarrollo, pruebas y producción</a> › <a href="infrastructure.html#fn-dep-dev">DEV</a> › <a href="infrastructure.html#fn-dep-dev-db">DB DEV</a></div>
+ <p>Independiente de TEST y PROD.</p>
+ <div class="badges"><span class="badge">ID dep-dev-db</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «DB DEV» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Independiente de TEST y PROD.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-dep-dev">DEV</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-dep-dev-config">
+ <div class="eyebrow">infrastructure</div><h2>Config DEV</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-deployment">13. Entornos de desarrollo, pruebas y producción</a> › <a href="infrastructure.html#fn-dep-dev">DEV</a> › <a href="infrastructure.html#fn-dep-dev-config">Config DEV</a></div>
+ <p>Valores y límites propios.</p>
+ <div class="badges"><span class="badge">ID dep-dev-config</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Config DEV» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Valores y límites propios.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-dep-dev">DEV</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-dep-test">
+ <div class="eyebrow">infrastructure</div><h2>TEST</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-deployment">13. Entornos de desarrollo, pruebas y producción</a> › <a href="infrastructure.html#fn-dep-test">TEST</a></div>
+ <p>Entorno para integración y aceptación.</p>
+ <div class="badges"><span class="badge">ID dep-test</span><span class="badge">2 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «TEST» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definición funcional suficiente para diseño. Implementación y contratos exactos siguen TO-BE.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Pipeline — Pruebas, migrations, Golden Tasks y seguridad.</li><li>Datos — No utiliza DB productiva.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="flow"><span class="step">Recibir entrada/contexto</span><span class="arrow">→</span><span class="step">Coordinar subfunciones: Pipeline, Datos</span><span class="arrow">→</span><span class="step">Consolidar resultado</span><span class="arrow">→</span><span class="step">Aplicar controles</span><span class="arrow">→</span><span class="step">Entregar salida</span></div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-deployment">13. Entornos de desarrollo, pruebas y producción</a><a class="node" href="infrastructure.html#fn-dep-ci">CI/CD local</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><a class="node" href="infrastructure.html#fn-dep-test-pipe">Pipeline</a><a class="node" href="infrastructure.html#fn-dep-test-data">Datos</a></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-dep-test-pipe">
+ <div class="eyebrow">infrastructure</div><h2>Pipeline</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-deployment">13. Entornos de desarrollo, pruebas y producción</a> › <a href="infrastructure.html#fn-dep-test">TEST</a> › <a href="infrastructure.html#fn-dep-test-pipe">Pipeline</a></div>
+ <p>Pruebas, migrations, Golden Tasks y seguridad.</p>
+ <div class="badges"><span class="badge">ID dep-test-pipe</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Pipeline» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Pruebas, migrations, Golden Tasks y seguridad.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-dep-test">TEST</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-dep-test-data">
+ <div class="eyebrow">infrastructure</div><h2>Datos</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-deployment">13. Entornos de desarrollo, pruebas y producción</a> › <a href="infrastructure.html#fn-dep-test">TEST</a> › <a href="infrastructure.html#fn-dep-test-data">Datos</a></div>
+ <p>No utiliza DB productiva.</p>
+ <div class="badges"><span class="badge">ID dep-test-data</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Datos» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>No utiliza DB productiva.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-dep-test">TEST</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-dep-prod">
+ <div class="eyebrow">infrastructure</div><h2>PROD</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-deployment">13. Entornos de desarrollo, pruebas y producción</a> › <a href="infrastructure.html#fn-dep-prod">PROD</a></div>
+ <p>Operación local estable.</p>
+ <div class="badges"><span class="badge">ID dep-prod</span><span class="badge">3 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «PROD» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definición funcional suficiente para diseño. Implementación y contratos exactos siguen TO-BE.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Promoción — Sólo desde TEST aprobado.</li><li>Security Gate — Obligatorio antes de activar.</li><li>Recovery — Backup/restore y rollback probados.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="flow"><span class="step">Recibir entrada/contexto</span><span class="arrow">→</span><span class="step">Coordinar subfunciones: Promoción, Security Gate, Recovery</span><span class="arrow">→</span><span class="step">Consolidar resultado</span><span class="arrow">→</span><span class="step">Aplicar controles</span><span class="arrow">→</span><span class="step">Entregar salida</span></div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-deployment">13. Entornos de desarrollo, pruebas y producción</a><a class="node" href="governance.html#fn-cy-gate">Security Gate</a><a class="node" href="infrastructure.html#fn-dep-ci">CI/CD local</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><a class="node" href="infrastructure.html#fn-dep-prod-gate">Promoción</a><a class="node" href="infrastructure.html#fn-dep-prod-sec">Security Gate</a><a class="node" href="infrastructure.html#fn-dep-prod-rec">Recovery</a></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-dep-prod-gate">
+ <div class="eyebrow">infrastructure</div><h2>Promoción</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-deployment">13. Entornos de desarrollo, pruebas y producción</a> › <a href="infrastructure.html#fn-dep-prod">PROD</a> › <a href="infrastructure.html#fn-dep-prod-gate">Promoción</a></div>
+ <p>Sólo desde TEST aprobado.</p>
+ <div class="badges"><span class="badge">ID dep-prod-gate</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Promoción» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Sólo desde TEST aprobado.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-dep-prod">PROD</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-dep-prod-sec">
+ <div class="eyebrow">infrastructure</div><h2>Security Gate</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-deployment">13. Entornos de desarrollo, pruebas y producción</a> › <a href="infrastructure.html#fn-dep-prod">PROD</a> › <a href="infrastructure.html#fn-dep-prod-sec">Security Gate</a></div>
+ <p>Obligatorio antes de activar.</p>
+ <div class="badges"><span class="badge">ID dep-prod-sec</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Security Gate» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Obligatorio antes de activar.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-dep-prod">PROD</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-dep-prod-rec">
+ <div class="eyebrow">infrastructure</div><h2>Recovery</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-deployment">13. Entornos de desarrollo, pruebas y producción</a> › <a href="infrastructure.html#fn-dep-prod">PROD</a> › <a href="infrastructure.html#fn-dep-prod-rec">Recovery</a></div>
+ <p>Backup/restore y rollback probados.</p>
+ <div class="badges"><span class="badge">ID dep-prod-rec</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Recovery» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Backup/restore y rollback probados.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-dep-prod">PROD</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-dep-ci">
+ <div class="eyebrow">infrastructure</div><h2>CI/CD local</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-deployment">13. Entornos de desarrollo, pruebas y producción</a> › <a href="infrastructure.html#fn-dep-ci">CI/CD local</a></div>
+ <p>Automatiza control de calidad.</p>
+ <div class="badges"><span class="badge">ID dep-ci</span><span class="badge">4 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «CI/CD local» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definición funcional suficiente para diseño. Implementación y contratos exactos siguen TO-BE.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Lint / static checks — Valida estilo y estructura.</li><li>Unit / integration — Comprueba comportamiento.</li><li>Golden Tasks — Detecta regresiones de IA.</li><li>Promoción — TEST → PROD sólo si todo está verde.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="flow"><span class="step">Lint</span><span class="arrow">→</span><span class="step">Unit</span><span class="arrow">→</span><span class="step">Integration</span><span class="arrow">→</span><span class="step">Migrations</span><span class="arrow">→</span><span class="step">Security</span><span class="arrow">→</span><span class="step">Golden Tasks</span><span class="arrow">→</span><span class="step">Package</span><span class="arrow">→</span><span class="step">Deploy TEST</span><span class="arrow">→</span><span class="step">Acceptance</span><span class="arrow">→</span><span class="step">Promote PROD</span></div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-deployment">13. Entornos de desarrollo, pruebas y producción</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><a class="node" href="core.html#fn-qaengine">Motor de aseguramiento de calidad (QA)</a><a class="node" href="governance.html#fn-cy-gate">Security Gate</a><a class="node" href="infrastructure.html#fn-dep-test">TEST</a><a class="node" href="infrastructure.html#fn-dep-prod">PROD</a></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><a class="node" href="infrastructure.html#fn-dep-ci-lint">Lint / static checks</a><a class="node" href="infrastructure.html#fn-dep-ci-unit">Unit / integration</a><a class="node" href="infrastructure.html#fn-dep-ci-golden">Golden Tasks</a><a class="node" href="infrastructure.html#fn-dep-ci-promote">Promoción</a></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-dep-ci-lint">
+ <div class="eyebrow">infrastructure</div><h2>Lint / static checks</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-deployment">13. Entornos de desarrollo, pruebas y producción</a> › <a href="infrastructure.html#fn-dep-ci">CI/CD local</a> › <a href="infrastructure.html#fn-dep-ci-lint">Lint / static checks</a></div>
+ <p>Valida estilo y estructura.</p>
+ <div class="badges"><span class="badge">ID dep-ci-lint</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Lint / static checks» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Valida estilo y estructura.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-dep-ci">CI/CD local</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-dep-ci-unit">
+ <div class="eyebrow">infrastructure</div><h2>Unit / integration</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-deployment">13. Entornos de desarrollo, pruebas y producción</a> › <a href="infrastructure.html#fn-dep-ci">CI/CD local</a> › <a href="infrastructure.html#fn-dep-ci-unit">Unit / integration</a></div>
+ <p>Comprueba comportamiento.</p>
+ <div class="badges"><span class="badge">ID dep-ci-unit</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Unit / integration» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Comprueba comportamiento.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-dep-ci">CI/CD local</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-dep-ci-golden">
+ <div class="eyebrow">infrastructure</div><h2>Golden Tasks</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-deployment">13. Entornos de desarrollo, pruebas y producción</a> › <a href="infrastructure.html#fn-dep-ci">CI/CD local</a> › <a href="infrastructure.html#fn-dep-ci-golden">Golden Tasks</a></div>
+ <p>Detecta regresiones de IA.</p>
+ <div class="badges"><span class="badge">ID dep-ci-golden</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Golden Tasks» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>Detecta regresiones de IA.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-dep-ci">CI/CD local</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article><article class="article function" id="fn-dep-ci-promote">
+ <div class="eyebrow">infrastructure</div><h2>Promoción</h2>
+ <div class="breadcrumb"><a href="core.html#fn-root">Orchestrator Agéntico Local v4.0</a> › <a href="infrastructure.html#fn-deployment">13. Entornos de desarrollo, pruebas y producción</a> › <a href="infrastructure.html#fn-dep-ci">CI/CD local</a> › <a href="infrastructure.html#fn-dep-ci-promote">Promoción</a></div>
+ <p>TEST → PROD sólo si todo está verde.</p>
+ <div class="badges"><span class="badge">ID dep-ci-promote</span><span class="badge">0 subfunciones</span><span class="badge">TO-BE v4.0</span></div>
+ <div class="grid" style="margin-top:14px">
+  <section class="card"><h3>Objetivo</h3><p>Cumplir la responsabilidad descrita para «Promoción» de manera explícita, verificable y desacoplada del resto del sistema.</p></section>
+  <section class="card"><h3>Nivel de definición</h3><p>Definido sólo a nivel de responsabilidad. Interfaz, schema, algoritmo y pruebas específicas deben completarse antes de implementación.</p></section>
+  <section class="card full"><h3>Responsabilidades</h3><ul><li>TEST → PROD sólo si todo está verde.</li></ul></section>
+  <section class="card full"><h3>Flujo funcional</h3><div class="callout warn">La baseline no define todavía un flujo interno específico. Debe especificarse antes de implementación.</div></section>
+  <section class="card"><h3>Recibe de / upstream</h3><div class="rels"><a class="node" href="infrastructure.html#fn-dep-ci">CI/CD local</a></div></section>
+  <section class="card"><h3>Entrega a / downstream</h3><div class="rels"><span class="muted">No modelado explícitamente.</span></div></section>
+  <section class="card full"><h3>Subfunciones</h3><div class="subf"><span class="muted">Sin subfunciones documentadas.</span></div></section>
+  <section class="card"><h3>Estados</h3><p>Sin state machine propia definida. Hereda el estado de task/workflow/agent correspondiente.</p></section>
+  <section class="card"><h3>Controles</h3><ul><li>Path Resolver; no rutas físicas hardcodeadas</li><li>Health/preflight antes de usar dependencias</li><li>Audit trail ligado a task/step cuando aplica</li><li>Errores explícitos; no éxito ambiguo</li></ul></section>
+  <section class="card"><h3>Si falla</h3><p>Debe pasar a DEGRADED/BLOCKED/UNHEALTHY según corresponda, preservando TIER-0 y evitando fallbacks silenciosos.</p></section>
+  <section class="card"><h3>Evidencia esperada</h3><ul><li>health/preflight</li><li>config/version</li><li>ruta lógica/resuelta</li><li>eventos de error</li><li>audit</li></ul></section>
+  
+ </div>
+ </article></main><footer>Agentia / Orchestrator Agéntico Local v4.0 · documentación estática · baseline de diseño greenfield</footer></body></html>
