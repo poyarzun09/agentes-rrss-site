@@ -86,8 +86,18 @@ svg text{user-select:none}
   </div>
   <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#88a9ba;margin:0 0 7px">Qué significa en este proyecto</h3>
   <p id="psummary"></p>
-  <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#88a9ba;margin:18px 0 7px">Cómo se aplicará</h3>
+  <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#88a9ba;margin:18px 0 7px">Cómo se aplica en este proyecto</h3>
+  <p id="papplication"></p>
   <ul id="pdetails"></ul>
+  <div style="margin-top:18px;background:#132431;border:1px solid #2d5368;border-radius:10px;padding:12px">
+    <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#8fd6df;margin:0 0 7px">Ejemplo concreto</h3><p id="pexample" style="margin:0"></p>
+  </div>
+  <div style="margin-top:12px;background:#251b18;border:1px solid #654338;border-radius:10px;padding:12px">
+    <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#e4b299;margin:0 0 7px">Error típico</h3><p id="perror" style="margin:0"></p>
+  </div>
+  <div style="margin-top:12px;background:#121f1a;border:1px solid #315844;border-radius:10px;padding:12px">
+    <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#9bd6b1;margin:0 0 7px">Evidencia esperada</h3><p id="pevidence" style="margin:0"></p>
+  </div>
     <div class="nodeActions">
       <button id="toggleBranch">Expandir rama</button>
       <button id="copyText">Copiar explicación</button>
@@ -140,6 +150,98 @@ function el(name,attrs={}){
   return e;
 }
 
+
+function buildContextGuide(n){
+  const route=(n._path||[n.title]).join(" > ");
+  const title=n.title||"este elemento";
+  let app="Dentro del Orchestrator v4.0, "+title+" se aplica en el flujo "+route+". Debe quedar ligado a una tarea, estado, agente, política o evidencia concreta; no puede depender sólo de interpretación libre del LLM.";
+  let ex="Ejemplo: durante una tarea real, "+title+" ejecuta su responsabilidad, entrega una salida verificable y deja trazabilidad antes de permitir que el flujo continúe.";
+  let err="Error típico: dejar "+title+" como concepto descriptivo sin comportamiento, validación o relación concreta con el resto del sistema.";
+  let ev="Evidencia esperada: identificador de tarea, estado, salida estructurada y registros suficientes para QA, PMO o auditoría.";
+
+  if(route.includes("Comunicaciones")){
+    app="En Comunicaciones, "+title+" forma parte de un flujo editorial e institucional controlado, trabajando con hechos, fuentes, mensajes, revisiones y aprobaciones.";
+    ex="Ejemplo: en un comunicado institucional, "+title+" interviene en su etapa —estrategia, investigación, redacción, edición, fact-check, aprobación o difusión— sin inventar cifras, declaraciones ni posiciones institucionales.";
+    err="Error típico: publicar una cifra, fecha, declaración, cargo o postura institucional sin fuente, revisión o aprobación suficiente.";
+    ev="Evidencia esperada: versión del contenido, fuentes, cambios editoriales, fact-check, aprobaciones y estado de publicación.";
+  } else if(route.includes("Ingeniería de Software")||route.includes("Software")){
+    app="En el repositorio greenfield nuevo, "+title+" participa en ingeniería sin modificar ni migrar el Orchestrator existente. Cada cambio se relaciona con requisito, código, prueba y revisión.";
+    ex="Ejemplo: al implementar una función del Workflow Engine, "+title+" ejecuta su parte y entrega código, decisión, prueba o artifact verificable al siguiente paso.";
+    err="Error típico: declarar una función terminada sin commit/artifact, pruebas aplicables, revisión independiente o trazabilidad al requisito.";
+    ev="Evidencia esperada: requisito, commit/artifact, tests, logs, revisión y estado del Quality Gate.";
+  } else if(route.includes("PMO")||route.includes("Gerencia del Proyecto")){
+    app="En PMO, "+title+" mantiene el estado real y persistente del proyecto para que la continuidad no dependa del historial de chat.";
+    ex="Ejemplo: al cerrar una jornada, "+title+" registra lo realmente completado, bloqueos, decisiones y próxima acción; luego RETOMAR PROYECTO usa esa información para reconstruir el estado.";
+    err="Error típico: registrar avances, fechas o decisiones sin evidencia real.";
+    ev="Evidencia esperada: registro PMO con timestamp, estado, owner, dependencia, decisión o checkpoint.";
+  } else if(route.includes("QA")||route.includes("calidad")||route.includes("Verificación")){
+    app="En QA, "+title+" participa en una cadena independiente de comprobación. No se aprueba porque el agente creador diga que está correcto.";
+    ex="Ejemplo: una nueva función llega con requisito, artifact y pruebas; "+title+" puede aprobar, devolver para corrección, bloquear o escalar según evidencia.";
+    err="Error típico: aprobar porque 'parece correcto' sin test, fuente o criterio objetivo disponible.";
+    ev="Evidencia esperada: requisito evaluado, pruebas, findings, reviewer, decisión del gate y próxima acción.";
+  } else if(route.includes("Ciberseguridad")){
+    app="En Ciberseguridad, "+title+" se aplica antes de producción e independiente del agente que desarrolló la solución.";
+    ex="Ejemplo: antes de PROD, "+title+" revisa el riesgo y puede bloquear el release ante un finding HIGH o CRITICAL sin resolver.";
+    err="Error típico: cerrar un finding crítico sin retest ni aceptación formal.";
+    ev="Evidencia esperada: finding, severidad, control, retest y decisión de Security Gate.";
+  } else if(route.includes("SecOps")||route.includes("Operaciones de seguridad")){
+    app="En SecOps, "+title+" opera sobre el Mac Studio y Orchestrator mediante eventos y respuestas controladas.";
+    ex="Ejemplo: si un proceso inesperado abre un puerto o modifica un archivo crítico, "+title+" participa en detección, triage, respuesta o cierre.";
+    err="Error típico: resolver una alerta sin clasificación, evidencia, timeline ni cierre documentado.";
+    ev="Evidencia esperada: evento, timestamp, proceso/archivo/puerto, severidad, acción y resultado.";
+  } else if(route.includes("Almacenamiento")){
+    app="En almacenamiento por niveles, "+title+" debe preservar la separación entre estado crítico interno y capacidad externa mediante ORCH_LOCAL_ROOT y ORCH_EXT_ROOT.";
+    ex="Ejemplo: al cargar un GGUF, "+title+" valida el tier externo; si el SSD falta, la tarea se bloquea sin copiar el modelo silenciosamente al SSD interno.";
+    err="Error típico: hardcodear una ruta, escribir en un volumen equivocado o usar el SSD interno para volumen sin política.";
+    ev="Evidencia esperada: tier, root lógico, identidad del volumen, espacio, permisos y hash cuando aplique.";
+  } else if(route.includes("Flujos de trabajo")||route.includes("Workflow")||route.includes("orquestación")){
+    app="En orquestación, "+title+" controla una parte del ciclo PLAN → EXECUTE → VERIFY → CHALLENGE → CORRECT → VALIDATE → LEARN → IMPROVE.";
+    ex="Ejemplo: una tarea de Software no salta de código a DONE; "+title+" controla su step antes de la siguiente transición.";
+    err="Error típico: saltarse dependencias, gates, retries o checkpoint porque el agente dijo que terminó.";
+    ev="Evidencia esperada: workflow/version, step_id, entradas, agente, salida, artifacts, decisión y transición.";
+  } else if(route.includes("Runtime")||route.includes("IA Local")||route.includes("modelo")){
+    app="En el runtime local, "+title+" participa en una ejecución controlada sobre llama-server y el modelo aprobado; los agentes son roles lógicos, no modelos separados cargados a la vez.";
+    ex="Ejemplo: al activar un agente, "+title+" controla su parte de sesión, contexto, modelo, tools o salida antes de devolver el resultado al workflow.";
+    err="Error típico: acceso directo a llama-server o tools sin gateway, permisos, health checks o validación.";
+    ev="Evidencia esperada: agent_id/task_id, modelo/versión, parámetros, tool calls, estado y salida validada.";
+  } else if(route.includes("Implementación")||route.includes("Fase")){
+    app="En el plan greenfield, "+title+" ocurre sólo en el entorno nuevo: repositorio nuevo, venv nuevo, DB nueva y configuración nueva. El Orchestrator actual queda intacto.";
+    ex="Ejemplo: durante "+title+", se producen sus entregables en el repositorio nuevo y sólo se avanza con criterios de aceptación verificados.";
+    err="Error típico: copiar el proyecto antiguo como base, mezclar entornos o cerrar una fase sin evidencia.";
+    ev="Evidencia esperada: checklist, artifacts, pruebas, decisiones, PMO y checkpoint.";
+  } else if(route.includes("Comercial")){
+    app="En Comercial, "+title+" usa datos reales o supuestos explícitos; precios, stock, catálogo y CRM no se inventan.";
+    ex="Ejemplo: para una propuesta, "+title+" usa pricing y datos reales disponibles y registra supuestos antes de cualquier compromiso externo.";
+    err="Error típico: inventar precio, stock, condición comercial o dato de cliente.";
+    ev="Evidencia esperada: fuente del dato, propuesta versionada, actividad CRM y aprobaciones.";
+  } else if(route.includes("Finanzas")){
+    app="En Finanzas, "+title+" puede analizar y recomendar; una acción financiera real siempre requiere aprobación humana explícita.";
+    ex="Ejemplo: "+title+" proyecta costos y entrega supuestos, pero un pago permanece WAITING_APPROVAL hasta decisión del usuario.";
+    err="Error típico: convertir automáticamente un análisis en una transacción real.";
+    ev="Evidencia esperada: cálculos, supuestos, fuentes, QA financiero y aprobación humana cuando aplique.";
+  } else if(route.includes("Contenidos")){
+    app="En Content Studio, "+title+" participa en producción multimedia trazable desde estrategia y guión hasta asset, adaptación y rendimiento.";
+    ex="Ejemplo: una pieza principal pasa por "+title+" y genera una salida versionada que luego puede adaptarse a otras plataformas.";
+    err="Error típico: publicar o reutilizar contenido sin revisar factualidad, derechos, marca o versión.";
+    ev="Evidencia esperada: asset/version, origen, brief, revisión, aprobación y métricas cuando correspondan.";
+  }
+  return {definition:n.summary||("Elemento responsable de "+title+"."),application:app,example:ex,error:err,evidence:ev};
+}
+
+function ensureGuideChildren(n){
+  if((n.children||[]).length) return;
+  const g=buildContextGuide(n), b=(n.id||"node")+"-guide";
+  n.application=g.application; n.example=g.example; n.error=g.error; n.evidence=g.evidence;
+  n.children=[
+    {id:b+"-def",title:"Qué significa",summary:g.definition,details:[]},
+    {id:b+"-app",title:"Cómo se aplica en este proyecto",summary:g.application,details:[]},
+    {id:b+"-ex",title:"Ejemplo concreto",summary:g.example,details:[]},
+    {id:b+"-err",title:"Error típico",summary:g.error,details:[]},
+    {id:b+"-ev",title:"Evidencia esperada",summary:g.evidence,details:[]}
+  ];
+  walk(n,n._parent,n._parent?n._parent._path:[]);
+}
+
 function render(){
   svg.innerHTML='';
   const g=el('g',{transform:`translate(${tx},${ty}) scale(${scale})`});
@@ -157,7 +259,7 @@ function render(){
     const t=el('text',{x:12,y:28});
     let label=n.title.length>46?n.title.slice(0,45)+'…':n.title;
     t.textContent=label; group.appendChild(t);
-    if((n.children||[]).length){
+    if((n.children||[]).length || !String(n.id||'').includes('-guide-')){
       const c=el('circle',{class:'toggle',cx:w+18,cy:23,r:12});
       const tt=el('text',{class:'toggleText',x:w+18,y:27,'text-anchor':'middle'});
       tt.textContent=collapsed.has(n.id)?'+':'−';
@@ -170,17 +272,28 @@ function render(){
 }
 
 function selectNode(n){
+  if(!(n.children||[]).length && !String(n.id||'').includes('-guide-')) ensureGuideChildren(n);
   selected=n;
+  const guide=buildContextGuide(n);
+  n.application=n.application||guide.application;
+  n.example=n.example||guide.example;
+  n.error=n.error||guide.error;
+  n.evidence=n.evidence||guide.evidence;
   document.getElementById('tag').textContent=n.tag || (n._parent?.tag || 'Componente');
   document.getElementById('ptitle').textContent=n.title;
   document.getElementById('ppath').textContent=n._path.join('  ›  ');
   document.getElementById('psummary').textContent=n.summary || 'Sin descripción adicional.';
+  document.getElementById('papplication').textContent=n.application || '';
+  document.getElementById('pexample').textContent=n.example || '';
+  document.getElementById('perror').textContent=n.error || '';
+  document.getElementById('pevidence').textContent=n.evidence || '';
   const ul=document.getElementById('pdetails'); ul.innerHTML='';
   (n.details||[]).forEach(d=>{const li=document.createElement('li');li.textContent=d;ul.appendChild(li);});
   document.getElementById('toggleBranch').textContent=collapsed.has(n.id)?'Expandir rama':'Colapsar rama';
   render();
 }
 function toggle(n){
+  if(!(n.children||[]).length) ensureGuideChildren(n);
   if(collapsed.has(n.id)) collapsed.delete(n.id); else collapsed.add(n.id);
   render(); if(selected.id===n.id) selectNode(n);
 }
