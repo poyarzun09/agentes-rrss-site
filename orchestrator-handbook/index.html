@@ -75,7 +75,7 @@ let currentView="home",currentNode=null,currentTab="overview";
 
 function anc(id){const out=[];let n=byId.get(id);while(n&&n.parent){n=byId.get(n.parent);if(n)out.unshift(n)}return out}
 function descendants(id){const out=[];const q=[...(byId.get(id)?.children||[])];while(q.length){const x=q.shift();out.push(x);q.push(...(byId.get(x)?.children||[]))}return out}
-function nodeButton(id,label){const n=byId.get(id);if(!n)return "";return '<button class="pill" onclick="openNode(\\''+id+'\\')">'+escapeHtml(label||n.title)+'</button>'}
+function nodeButton(id,label){const n=byId.get(id);if(!n)return "";return '<button class="pill" onclick="openNode(\''+id+'\')">'+escapeHtml(label||n.title)+'</button>'}
 function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 function cat(n){
  const p=n.path.join(" > ");
@@ -157,7 +157,7 @@ function sourceStatus(n){
   ?"La baseline v4.0 define esta función a nivel de responsabilidad, pero no documenta todavía una interfaz o algoritmo interno completo. Se marca como diseño pendiente de detalle; esta página no inventa esos campos."
   :"La baseline v4.0 contiene responsabilidad y/o descomposición suficiente para describir esta función. Los detalles de implementación siguen siendo TO-BE hasta que exista código y pruebas.";
 }
-function breadcrumb(n){return n.path.map((x,i)=>{const a=i===n.path.length-1?n:byId.get(anc(n.id)[i]?.id||"");return '<span class="crumb" '+(a?'onclick="openNode(\\''+a.id+'\\')"':'')+'>'+escapeHtml(x)+'</span>'}).join(" › ")}
+function breadcrumb(n){return n.path.map((x,i)=>{const a=i===n.path.length-1?n:byId.get(anc(n.id)[i]?.id||"");return '<span class="crumb" '+(a?'onclick="openNode(\''+a.id+'\')"':'')+'>'+escapeHtml(x)+'</span>'}).join(" › ")}
 function updateHash(v){history.pushState(null,"","#"+v)}
 window.addEventListener("popstate",routeFromHash);
 function routeFromHash(){const h=location.hash.slice(1);if(h.startsWith("node/"))openNode(h.slice(5),false);else renderView(h||"home",false)}
@@ -170,7 +170,7 @@ function renderView(v,push=true){
  document.getElementById("content").innerHTML=fn();document.querySelector("main").scrollTop=0;
 }
 function hero(kicker,title,body,badges=[]){return '<div class="hero"><div class="eyebrow">'+kicker+'</div><h1>'+title+'</h1><p>'+body+'</p><div class="badges">'+badges.map(x=>'<span class="badge">'+x+'</span>').join("")+'</div></div>'}
-function lane(label,items){return '<div class="lane"><div class="laneLabel">'+label+'</div><div class="laneFlow">'+items.map((x,i)=>{const item=Array.isArray(x)?x:[x,null];return (item[1]?'<button class="box" onclick="openNode(\\''+item[1]+'\\')">'+item[0]+'</button>':'<span class="box">'+item[0]+'</span>')+(i<items.length-1?'<span class="arrow">→</span>':'')}).join("")+'</div></div>'}
+function lane(label,items){return '<div class="lane"><div class="laneLabel">'+label+'</div><div class="laneFlow">'+items.map((x,i)=>{const item=Array.isArray(x)?x:[x,null];return (item[1]?'<button class="box" onclick="openNode(\''+item[1]+'\')">'+item[0]+'</button>':'<span class="box">'+item[0]+'</span>')+(i<items.length-1?'<span class="arrow">→</span>':'')}).join("")+'</div></div>'}
 function home(){
  return hero("Inicio recomendado","Entender Agentia sin perderse","Este handbook está diseñado para que una persona que nunca haya visto el proyecto pueda comprender primero el sistema completo y después hacer zoom hasta una función concreta. La arquitectura y la referencia funcional están separadas para evitar el problema de un árbol enorme y repetitivo.",["Baseline v4.0","Greenfield","Local-first","Diseño TO-BE"])+
  '<div class="grid">'+
@@ -197,7 +197,7 @@ function architecture(){
  lane("Herramientas",[["Tool Gateway","toolgw"],["Filesystem / Git / Python / DB / Media",null]])+
  lane("Datos",[["DB / State / Audit",null],["Knowledge","knowledge"],["Artifacts","artifact"],["Storage","storage"]])+
  '</div></section>'+
- '<section class="card full"><h2>Nivel 3 · Componentes del Core</h2><div class="boxGrid">'+["pmo","task","planner","teams","registry","scheduler","workflow","permission","approval","policy","context","memory","knowledge","qaengine","verify","learning","audit","securitybus","resource","config","artifact","path"].filter(x=>byId.has(x)).map(x=>'<div class="c4box" onclick="openNode(\\''+x+'\\')"><b>'+escapeHtml(byId.get(x).title)+'</b><span>'+escapeHtml(byId.get(x).summary)+'</span></div>').join("")+'</div></section>'+
+ '<section class="card full"><h2>Nivel 3 · Componentes del Core</h2><div class="boxGrid">'+["pmo","task","planner","teams","registry","scheduler","workflow","permission","approval","policy","context","memory","knowledge","qaengine","verify","learning","audit","securitybus","resource","config","artifact","path"].filter(x=>byId.has(x)).map(x=>'<div class="c4box" onclick="openNode(\''+x+'\')"><b>'+escapeHtml(byId.get(x).title)+'</b><span>'+escapeHtml(byId.get(x).summary)+'</span></div>').join("")+'</div></section>'+
  '<section class="card full"><h2>Nivel 4 · Deployment físico</h2><div class="c4"><div class="boundary"><div class="boundaryTitle">Mac Studio M1 Max · host inicial</div><div class="boxGrid"><div class="c4box" onclick="openNode(\'deployment\')"><b>DEV / TEST / PROD</b><span>Configuración, DB, logs y artifacts separados.</span></div><div class="c4box" onclick="openNode(\'st-tier0\')"><b>TIER-0 · SSD interno</b><span>Core, venv, config, DB, checkpoints, audit activo.</span></div><div class="c4box" onclick="openNode(\'st-tier1\')"><b>TIER-1 · SSD externo rápido</b><span>Modelos, knowledge, artifacts, datasets y backups.</span></div><div class="c4box" onclick="openNode(\'st-tier2\')"><b>TIER-2 · futuro</b><span>Backup independiente de información irremplazable.</span></div></div></div></div></section>'+
  '</div>';
 }
@@ -259,7 +259,7 @@ function catalog(){
  const groups=["Core y Runtime","PMO","QA y verificación","Ciberseguridad","SecOps","Storage","Deployment","Gobierno"];
  return hero("Referencia técnica","Catálogo funcional","Aquí sí se navega por función. Cada entrada abre una ficha con ubicación, responsabilidad, flujo, relaciones clickeables, estados, controles, operación y fuentes de diseño.",["Funciones semánticas: "+NODES.length,"Sin nodos artificiales"])+
  '<div class="sectionHead"><h2>Explorar por dominio</h2><span>Haz clic en cualquier tarjeta</span></div>'+
- groups.map(g=>'<section class="card" style="margin:10px 0"><h2>'+g+'</h2><div class="catalog">'+NODES.filter(n=>cat(n)===g&&n.depth<=3).slice(0,50).map(n=>'<div class="catalogCard" onclick="openNode(\\''+n.id+'\\')"><b>'+escapeHtml(n.title)+'</b><p>'+escapeHtml(n.summary)+'</p></div>').join("")+'</div></section>').join("");
+ groups.map(g=>'<section class="card" style="margin:10px 0"><h2>'+g+'</h2><div class="catalog">'+NODES.filter(n=>cat(n)===g&&n.depth<=3).slice(0,50).map(n=>'<div class="catalogCard" onclick="openNode(\''+n.id+'\')"><b>'+escapeHtml(n.title)+'</b><p>'+escapeHtml(n.summary)+'</p></div>').join("")+'</div></section>').join("");
 }
 function teams(){
  const root=byId.get("agents"); const kids=(root?.children||[]).map(x=>byId.get(x)).filter(Boolean);
@@ -305,7 +305,7 @@ function implementation(){
 function indexView(){
  const sorted=[...NODES].sort((a,b)=>a.title.localeCompare(b.title,"es"));
  return hero("Referencia","Índice A–Z","Índice directo de todas las entidades semánticas conservadas de la baseline, sin los nodos auxiliares generados automáticamente.",["Total: "+NODES.length])+
- '<div class="aIndex" style="margin-top:14px">'+sorted.map(n=>'<div class="aItem" onclick="openNode(\\''+n.id+'\\')"><b>'+escapeHtml(n.title)+'</b><span>'+escapeHtml(cat(n))+' · '+escapeHtml(n.path.slice(0,-1).join(" › "))+'</span></div>').join("")+'</div>';
+ '<div class="aIndex" style="margin-top:14px">'+sorted.map(n=>'<div class="aItem" onclick="openNode(\''+n.id+'\')"><b>'+escapeHtml(n.title)+'</b><span>'+escapeHtml(cat(n))+' · '+escapeHtml(n.path.slice(0,-1).join(" › "))+'</span></div>').join("")+'</div>';
 }
 function openNode(id,push=true){
  const n=byId.get(id);if(!n)return;
@@ -318,7 +318,7 @@ function renderNode(){
  const n=currentNode,r=relFor(n),flow=flowFor(n),srcs=sources(n),resp=responsibilities(n),sc=scenarioFor(n);
  const tabs=["overview","flow","interfaces","controls","operations","example","sources"];
  const labels={overview:"Resumen",flow:"Flujo",interfaces:"Relaciones",controls:"Controles",operations:"Operación",example:"Ejemplo",sources:"Fuentes"};
- const tabbar='<div class="tabs">'+tabs.map(t=>'<button class="tab '+(currentTab===t?"active":"")+'" onclick="setTab(\\''+t+'\\')">'+labels[t]+'</button>').join("")+'</div>';
+ const tabbar='<div class="tabs">'+tabs.map(t=>'<button class="tab '+(currentTab===t?"active":"")+'" onclick="setTab(\''+t+'\')">'+labels[t]+'</button>').join("")+'</div>';
  let body="";
  if(currentTab==="overview"){
    body='<div class="grid">'+
@@ -326,7 +326,7 @@ function renderNode(){
    '<section class="card"><h2>Ubicación</h2><div class="kv"><div>Ruta</div><div>'+escapeHtml(n.path.join(" → "))+'</div><div>Dominio</div><div>'+cat(n)+'</div><div>Estado documental</div><div><span class="status design">TO-BE / baseline v4.0</span></div></div></section>'+
    '<section class="card full"><h2>Responsabilidades</h2><ul>'+resp.map(x=>'<li>'+escapeHtml(x)+'</li>').join("")+'</ul></section>'+
    '<section class="card full"><h2>Contexto local</h2><div class="localMap"><div class="sideMap"><div class="small">RECIBE DE / PADRE</div>'+r.up.map(id=>nodeButton(id)).join("")+'</div><div class="currentBox">'+escapeHtml(n.title)+'</div><div class="sideMap"><div class="small">ENTREGA / RELACIONA CON</div>'+r.down.map(id=>nodeButton(id)).join("")+'</div></div></section>'+
-   (n.children.length?'<section class="card full"><h2>Subfunciones</h2><div class="catalog">'+n.children.map(id=>{const x=byId.get(id);return '<div class="catalogCard" onclick="openNode(\\''+id+'\\')"><b>'+escapeHtml(x.title)+'</b><p>'+escapeHtml(x.summary)+'</p></div>'}).join("")+'</div></section>':'')+
+   (n.children.length?'<section class="card full"><h2>Subfunciones</h2><div class="catalog">'+n.children.map(id=>{const x=byId.get(id);return '<div class="catalogCard" onclick="openNode(\''+id+'\')"><b>'+escapeHtml(x.title)+'</b><p>'+escapeHtml(x.summary)+'</p></div>'}).join("")+'</div></section>':'')+
    '<section class="card full"><div class="callout '+((!n.details.length&&!n.children.length&&!FLOWS[n.id])?"warn":"good")+'">'+escapeHtml(sourceStatus(n))+'</div></section>'+
    '</div>';
  }
@@ -373,7 +373,7 @@ function search(){
  if(!q){host.style.display="none";return}
  const words=q.split(/\\s+/);
  const res=NODES.map(n=>({n,score:words.reduce((s,w)=>s+(n.title.toLowerCase().includes(w)?8:0)+(n.summary.toLowerCase().includes(w)?3:0)+(n.path.join(" ").toLowerCase().includes(w)?1:0),0)})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,18);
- host.innerHTML=res.map(({n})=>'<div class="searchItem" onclick="openNode(\\''+n.id+'\\');document.getElementById(\\'searchResults\\').style.display=\\'none\\';"><b>'+escapeHtml(n.title)+'</b><span>'+escapeHtml(n.path.slice(0,-1).join(" › "))+'</span></div>').join("");
+ host.innerHTML=res.map(({n})=>'<div class="searchItem" onclick="openNode(\''+n.id+'\');document.getElementById(\'searchResults\').style.display=\'none\';"><b>'+escapeHtml(n.title)+'</b><span>'+escapeHtml(n.path.slice(0,-1).join(" › "))+'</span></div>').join("");
  host.style.display=res.length?"block":"none";
 }
 document.querySelectorAll(".navBtn").forEach(b=>b.onclick=()=>renderView(b.dataset.view));
