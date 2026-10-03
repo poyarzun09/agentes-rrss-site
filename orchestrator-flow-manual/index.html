@@ -38,6 +38,36 @@ footer{border-top:1px solid #203946;padding:18px;text-align:center;color:#8097a4
 .supportGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:9px}.supportGrid .flowNode{min-width:0}
 .qaBranches{grid-template-columns:1fr 1fr}
 @media(max-width:900px){.branchGrid,.executionSplit{grid-template-columns:1fr}.simpleFlow{flex-direction:column}.simpleFlow i{transform:rotate(90deg)}.branchFlow{flex-direction:column}.branchFlow i{transform:rotate(90deg)}}
+
+/* Runtime flow v4: static-first, no overlay connectors */
+.runtimeFlowV4{display:grid;gap:0;max-width:1480px;margin:0 auto}
+.v4Stage{background:#0b1b24;border:1px solid #294a59;border-radius:16px;padding:18px;overflow:hidden}
+.v4Head{display:flex;gap:12px;align-items:center;margin-bottom:17px}
+.v4Head>span{display:grid;place-items:center;min-width:34px;height:34px;border-radius:50%;background:#214b59;border:1px solid #548899;font-weight:900}
+.v4Head b{display:block;font-size:15px}.v4Head small{display:block;color:#92a9b6;margin-top:2px}
+.v4Node{display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:138px;max-width:190px;min-height:58px;padding:9px 11px;background:#12303d;border:1px solid #3c6879;border-radius:11px;color:#edf3f6;text-align:center;text-decoration:none}
+.v4Node:hover{background:#1a4554;border-color:#76bfca}.v4Node b{font-size:11.5px;line-height:1.25}.v4Node small{font-size:9.5px;line-height:1.25;color:#91a9b5;margin-top:4px}
+.v4Node.static{cursor:default}.v4Node.user,.v4Node.resultNode{background:#153426;border-color:#4c9468}.v4Node.human{background:#32271a;border-color:#aa8145}.v4Node.blocked{background:#301b1d;border-color:#87514b}.v4Node.packet{background:#1a2a37;border-color:#5a7281}.v4Node.primary{border-width:2px;border-color:#5a9cac}.v4Node.structured{background:#16313e;border-width:2px}.v4Node.gate{background:#282416;border-color:#927840}.v4Node.tool{background:#172c22;border-color:#4d805f}
+.v4Arrow{font-size:23px;color:#73a1b0;font-weight:800;line-height:1}.v4Arrow.vertical{transform:none}.v4Arrow.down{margin:5px 0}
+.v4Linear{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap}.v4Linear.compact .v4Node{min-width:155px}
+.v4Down{text-align:center;color:#73a1b0;padding:5px 0}.v4Down span{display:block;font-size:27px;line-height:28px}.v4Down small{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.08em}
+.v4Branches{display:grid;gap:12px;margin-top:18px}.v4Branches.three{grid-template-columns:1fr 1.8fr 1fr}.v4Branches.two{grid-template-columns:1fr 1fr}
+.v4Branch{border:1px solid #315565;border-radius:13px;background:#10242e;padding:13px;text-align:center}.v4Branch.allowed{border-color:#3f7454;background:#10261a}.v4Branch.approval{border-color:#75653c;background:#211e15}.v4Branch.forbidden,.v4Branch.error{border-color:#7d4b49;background:#251719}
+.branchTag{display:inline-block;border-radius:999px;padding:3px 8px;margin-bottom:7px;font-size:8.5px;font-weight:900;letter-spacing:.05em;background:#1a3d49;color:#cae7ed}.allowed .branchTag{background:#23513a}.approval .branchTag{background:#5f4e25}.forbidden .branchTag,.error .branchTag{background:#633936}
+.v4Branch>b{display:block}.v4Branch>small{display:block;color:#91a8b5;margin-top:3px}.branchDown{font-size:22px;color:#718f9b;margin:4px 0}
+.v4MiniFlow{display:flex;gap:7px;align-items:center;justify-content:center;flex-wrap:wrap}.v4OutcomeGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.v4Outcome{border-radius:10px;padding:9px;background:#0e2029;border:1px solid #365460}.v4Outcome.good{border-color:#3f7454}.v4Outcome.bad{border-color:#7d4b49}.v4Outcome>b{display:block;font-size:10px}.v4Outcome small{font-size:9px;color:#93a9b5}.v4Outcome .v4Node{margin:6px auto 0;min-width:130px}
+.v4SideNote{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px dashed #36515e}.v4SideNote>span{font-size:10px;color:#8ca5b2}
+.contextAssembly{display:grid;grid-template-columns:minmax(260px,1fr) minmax(240px,360px);gap:20px;max-width:930px;margin:0 auto;align-items:center}.contextInputs{display:grid;grid-template-columns:1fr 34px 1fr 34px;gap:7px;align-items:center}.inputArrow{font-size:24px;color:#73a1b0}.contextCenter{display:flex;flex-direction:column;align-items:center}
+.runtimeForkLabel,.mergeLabel{text-align:center;margin-top:18px;color:#9eb4be;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em}.forkArrows{display:flex;justify-content:center;gap:330px;font-size:30px;color:#72a0af;line-height:30px}.forkArrows.merge{margin-top:5px}
+.executionBranches{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:980px;margin:0 auto}.execBranch{border:1px solid #315363;border-radius:14px;padding:14px;background:#0e222c}.execBranch.tools{border-color:#3f684e;background:#0f2219}.execTitle{text-align:center;border-bottom:1px solid #294653;padding-bottom:8px;margin-bottom:10px}.execTitle b{display:block;font-size:12px}.execTitle small{display:block;color:#8fa7b4;font-size:9.5px}
+.v4Vertical{display:flex;flex-direction:column;align-items:center;gap:5px}.v4Center{display:flex;justify-content:center}.execControlLinks{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-top:10px}.execControlLinks .v4Node{min-width:90px;min-height:40px;padding:5px 7px}.execControlLinks .v4Node small{display:none}
+.v4SplitDown{display:grid;grid-template-columns:1fr 1fr;gap:18px;text-align:center;padding:6px 0}.v4SplitDown span{display:block;font-size:27px}.v4SplitDown small{font-size:9px;font-weight:900;letter-spacing:.07em}.goodPath{color:#77b88d}.badPath{color:#c8796d}
+.v4DualStage{display:grid;grid-template-columns:1fr 1fr;gap:16px}.closeStage{border-color:#3f7454}.errorStage{border-color:#794b48;background:#1b1416}
+.v4Return{display:block;margin:14px auto 0;max-width:520px;padding:9px 12px;text-align:center;color:#f0c2bb;background:#301a1c;border:1px solid #8b514b;border-radius:999px;text-decoration:none;font-size:10px;font-weight:900}.v4Return:hover{background:#432326}
+.transverseStage{margin-top:16px;border-style:dashed}.transverseGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px}.transverseGrid .v4Node{min-width:0;max-width:none}
+.v4Legend{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.v4Legend>div{background:#0d202a;border:1px solid #294756;border-radius:10px;padding:9px;font-size:10px}.v4Legend b{display:block}.v4Legend small{color:#8fa7b4}.lg{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}.lg.good{background:#5f9e74}.lg.bad{background:#a45a50}.lg.control{background:#7389bd}
+@media(max-width:1050px){.v4Branches.three,.v4Branches.two,.v4DualStage,.executionBranches,.v4SplitDown{grid-template-columns:1fr}.contextAssembly{grid-template-columns:1fr}.contextInputs{grid-template-columns:1fr}.inputArrow{text-align:center;transform:rotate(45deg)}.forkArrows{gap:150px}.v4Legend{grid-template-columns:1fr 1fr}}
+@media(max-width:720px){.v4Linear,.v4MiniFlow{flex-direction:column}.v4Linear>.v4Arrow,.v4MiniFlow>.v4Arrow{transform:rotate(90deg)}.v4OutcomeGrid{grid-template-columns:1fr}.forkArrows{gap:70px}.v4Legend{grid-template-columns:1fr}.v4Node{max-width:260px;width:100%}}
 </style></head><body>
 <header><div class="brand">Agentia Flow Manual <small>Orchestrator Agéntico Local v4.0 · flowchart maestro + manual técnico</small></div><nav><a href="#runtime">Runtime completo</a><a href="#build">Construcción</a><a href="#infra">Infraestructura</a><a href="#controls">Controles</a><a href="../orchestrator-handbook-final/reference.html">Manual A–Z</a></nav></header>
 <main>
@@ -47,113 +77,231 @@ footer{border-top:1px solid #203946;padding:18px;text-align:center;color:#8097a4
 <div><b>Línea azul</b><span>Flujo operativo principal.</span></div><div><b>Línea violeta discontinua</b><span>Control o llamada transversal, por ejemplo permisos para tools.</span></div><div><b>Línea roja</b><span>Corrección, error, RCA y retorno al flujo.</span></div><div><b>Rombo</b><span>Punto de decisión: aprobación o validación.</span></div><div><b>Bloque clickeable</b><span>Abre la ficha técnica completa de esa función.</span></div></div></section>
 
 <section id="runtime" class="section"><div class="eyebrow">Diagrama 1</div><h2>Funcionamiento runtime completo</h2><p>Este es el recorrido de una tarea desde que el usuario plantea un objetivo hasta que obtiene un resultado validado. También muestra el desvío por aprobación humana, el bucle de corrección y aprendizaje, y los controles operacionales transversales.</p>
-<div class="runtimeFlowV3">
-  <div class="flowPhase">
-    <div class="phaseHeader"><span>1</span><div><b>Entrada y planificación</b><small>La solicitud se convierte en trabajo planificado y ejecutable.</small></div></div>
-    <div class="simpleFlow">
-      <div class="flowNode static"><b>Usuario</b></div><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-task"><b>Task Manager</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-planner"><b>Task Planner</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-teams"><b>Team Manager</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-registry"><b>Agent Registry</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-scheduler"><b>Scheduler</b></a>
-    </div>
-  </div>
 
-  <div class="phaseDown">↓</div>
+<div class="runtimeFlowV4">
 
-  <div class="flowPhase">
-    <div class="phaseHeader"><span>2</span><div><b>Orquestación, políticas y aprobación</b><small>Antes de ejecutar, el sistema resuelve reglas y autoridad.</small></div></div>
-    <div class="simpleFlow">
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-workflow"><b>Workflow Engine</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-permission"><b>Permission Engine</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-policy"><b>Policy Engine</b></a><i>→</i>
-      <div class="flowDecision">¿Requiere<br>aprobación?</div>
+  <section class="v4Stage" id="runtime-phase-1">
+    <div class="v4Head"><span>1</span><div><b>Entrada y planificación</b><small>La petición del usuario se convierte en una tarea planificada, asignable y ejecutable.</small></div></div>
+    <div class="v4Linear">
+      <div class="v4Node static user"><b>Usuario</b><small>Define objetivo y restricciones</small></div>
+      <div class="v4Arrow ">→</div>
+      <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-task"><b>Task Manager</b><small>Crea task y controla su estado</small></a>
+      <div class="v4Arrow ">→</div>
+      <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-planner"><b>Task Planner</b><small>Descompone, ordena y define gates</small></a>
+      <div class="v4Arrow ">→</div>
+      <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-teams"><b>Team Manager</b><small>Selecciona el equipo lógico</small></a>
+      <div class="v4Arrow ">→</div>
+      <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-registry"><b>Agent Registry</b><small>Resuelve roles y capacidades</small></a>
+      <div class="v4Arrow ">→</div>
+      <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-scheduler"><b>Scheduler</b><small>Espera dependencias y recursos</small></a>
+      <div class="v4Arrow ">→</div>
+      <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-workflow"><b>Workflow Engine</b><small>Toma control de la ejecución</small></a>
     </div>
-    <div class="branchGrid">
-      <div class="branch noBranch"><span>NO</span><b>Continuar</b><small>La política permite seguir sin intervención humana.</small></div>
-      <div class="branch yesBranch"><span>SÍ</span>
-        <div class="branchFlow"><a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-approval"><b>Approval Engine</b></a><i>→</i><div class="flowNode humanNode"><b>Decisión humana</b><small>APPROVE / REJECT</small></div><i>→</i><div class="flowNode static"><b>Continuar</b></div></div>
+  </section>
+
+  <div class="v4Down"><span>↓</span><small>plan ejecutable</small></div>
+
+  <section class="v4Stage" id="runtime-phase-2">
+    <div class="v4Head"><span>2</span><div><b>Gate de autorización</b><small>Antes de una acción gobernada, se resuelven permisos, políticas y —si corresponde— aprobación humana.</small></div></div>
+    <div class="v4Linear compact">
+      <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-workflow"><b>Workflow Engine</b><small>Solicita avanzar al siguiente step</small></a>
+      <div class="v4Arrow ">→</div>
+      <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-permission"><b>Permission Engine</b><small>Comprueba identidad y privilegio</small></a>
+      <div class="v4Arrow ">→</div>
+      <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-policy"><b>Policy Engine</b><small>Aplica reglas y riesgo</small></a>
+      <div class="v4Arrow ">→</div>
+      <div class="v4Node static decision"><b>¿Requiere aprobación?</b><small>AUTO / SUPERVISED / APPROVAL_REQUIRED / FORBIDDEN</small></div>
+    </div>
+
+    <div class="v4Branches three">
+      <div class="v4Branch allowed">
+        <span class="branchTag">AUTO / SUPERVISED</span>
+        <b>Continuar autorizado</b>
+        <small>No requiere decisión humana para avanzar.</small>
+        <div class="branchDown">↓</div>
+        <div class="v4Node static merge"><b>Entrada autorizada</b><small>pasa a contexto y ejecución</small></div>
+      </div>
+
+      <div class="v4Branch approval">
+        <span class="branchTag">APPROVAL_REQUIRED</span>
+        <div class="v4MiniFlow">
+          <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-approval"><b>Approval Engine</b><small>Crea REQUESTED</small></a>
+          <div class="v4Arrow ">→</div>
+          <div class="v4Node static human"><b>Decisión humana</b><small>APPROVED / REJECTED / EXPIRED / CANCELLED</small></div>
+        </div>
+        <div class="v4OutcomeGrid">
+          <div class="v4Outcome good"><b>APPROVED</b><small>continúa</small><div>↓</div><div class="v4Node static merge"><b>Entrada autorizada</b></div></div>
+          <div class="v4Outcome bad"><b>REJECTED / EXPIRED / CANCELLED</b><small>no ejecuta la acción</small><div>↓</div><div class="v4Node static blocked"><b>BLOCKED / CANCELLED</b><small>registrar y cerrar/esperar</small></div></div>
+        </div>
+      </div>
+
+      <div class="v4Branch forbidden">
+        <span class="branchTag">FORBIDDEN</span>
+        <b>Acción bloqueada</b>
+        <small>No llega a Tool Gateway ni al sistema operativo.</small>
+        <div class="branchDown">↓</div>
+        <div class="v4Node static blocked"><b>PERMISSION_DENIED</b><small>Audit + Security Event si aplica</small></div>
       </div>
     </div>
+
+    <div class="v4SideNote">
+      <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-audit"><b>Audit Engine</b><small>registra la decisión</small></a>
+      <div class="v4Arrow ">↔</div>
+      <a class="v4Node " href="../orchestrator-handbook-final/governance.html#fn-pmo"><b>PMO</b><small>mantiene estado/bloqueo</small></a>
+      <span>Las ramas bloqueadas no siguen al paso 3.</span>
+    </div>
+  </section>
+
+  <div class="v4Down"><span>↓</span><small>sólo si el flujo está autorizado</small></div>
+
+  <section class="v4Stage" id="runtime-phase-3">
+    <div class="v4Head"><span>3</span><div><b>Construcción de contexto</b><small>Context Manager arma un paquete de contexto usando estado, políticas, memoria y conocimiento relevante.</small></div></div>
+
+    <div class="contextAssembly">
+      <div class="contextInputs">
+        <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-memory"><b>Memory Manager</b><small>memoria relevante</small></a>
+        <div class="inputArrow">↘</div>
+        <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-knowledge"><b>Knowledge Manager</b><small>fuentes y conocimiento</small></a>
+        <div class="inputArrow">↙</div>
+      </div>
+      <div class="contextCenter">
+        <a class="v4Node primary" href="../orchestrator-handbook-final/core.html#fn-context"><b>Context Manager</b><small>selecciona y presupuesta contexto</small></a>
+        <div class="v4Arrow down">↓</div>
+        <div class="v4Node static packet"><b>Context Package</b><small>objetivo + requisitos + políticas + estado + evidencia</small></div>
+        <div class="v4Arrow down">↓</div>
+        <a class="v4Node primary" href="../orchestrator-handbook-final/core.html#fn-agentruntime"><b>Agent Runtime</b><small>activa el rol lógico y prepara ejecución</small></a>
+      </div>
+    </div>
+
+    <div class="runtimeForkLabel">Agent Runtime decide la ruta necesaria para el step</div>
+    <div class="forkArrows"><span>↙</span><span>↘</span></div>
+
+    <div class="executionBranches">
+      <div class="execBranch inference">
+        <div class="execTitle"><b>A · Inferencia local</b><small>razonamiento/generación con modelo aprobado</small></div>
+        <div class="v4Vertical">
+          <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-modelgw"><b>Model Gateway</b><small>selecciona modelo/perfil</small></a>
+          <div class="v4Arrow vertical">↓</div>
+          <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-llama"><b>llama-server</b><small>ejecuta inferencia local</small></a>
+          <div class="v4Arrow vertical">↓</div>
+          <div class="v4Node static "><b>Respuesta del modelo</b><small>texto / JSON / tool intent</small></div>
+        </div>
+      </div>
+
+      <div class="execBranch tools">
+        <div class="execTitle"><b>B · Acción real con herramienta</b><small>filesystem, Git, Python, DB, media u otra tool autorizada</small></div>
+        <div class="v4Vertical">
+          <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-toolgw"><b>Tool Gateway</b><small>recibe tool call</small></a>
+          <div class="v4Arrow vertical">↓</div>
+          <div class="v4Node static gate"><b>Revalidar Permission + Policy</b><small>y Approval si la acción cambia de riesgo</small></div>
+          <div class="v4Arrow vertical">↓</div>
+          <div class="v4Node static tool"><b>Herramienta real</b><small>ejecuta fuera del LLM</small></div>
+          <div class="v4Arrow vertical">↓</div>
+          <div class="v4Node static "><b>Tool Result</b><small>stdout / error / artifact / evidence</small></div>
+        </div>
+        <div class="execControlLinks">
+          <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-permission"><b>Permission</b><small>control</small></a>
+          <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-policy"><b>Policy</b><small>regla</small></a>
+          <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-approval"><b>Approval</b><small>si aplica</small></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mergeLabel">Ambas rutas producen un resultado estructurable</div>
+    <div class="forkArrows merge"><span>↘</span><span>↙</span></div>
+    <div class="v4Center">
+      <a class="v4Node structured" href="../orchestrator-handbook-final/core.html#fn-structured"><b>Structured Output Validation</b><small>valida schema, campos y formato</small></a>
+    </div>
+  </section>
+
+  <div class="v4Down"><span>↓</span><small>resultado estructurado</small></div>
+
+  <section class="v4Stage" id="runtime-phase-4">
+    <div class="v4Head"><span>4</span><div><b>Verificación y calidad</b><small>El resultado no se acepta por apariencia ni por consenso entre agentes: debe demostrar cumplimiento.</small></div></div>
+    <div class="v4Linear compact">
+      <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-verify"><b>Verification Engine</b><small>comprueba con herramientas/evidencia</small></a>
+      <div class="v4Arrow ">→</div>
+      <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-qaengine"><b>QA Engine</b><small>aplica requisitos, DoD y quality gates</small></a>
+      <div class="v4Arrow ">→</div>
+      <div class="v4Node static decision"><b>¿QA cumple?</b><small>VERIFIED / PARTIALLY_VERIFIED / UNVERIFIED / REJECTED</small></div>
+    </div>
+    <div class="v4Branches two">
+      <div class="v4Branch allowed">
+        <span class="branchTag">VERIFIED</span>
+        <b>Resultado aceptable</b>
+        <small>Puede continuar al cierre.</small>
+      </div>
+      <div class="v4Branch error">
+        <span class="branchTag">NO CUMPLE</span>
+        <b>Resultado no cerrable</b>
+        <small>Abre Error Registry y ciclo de corrección.</small>
+      </div>
+    </div>
+  </section>
+
+  <div class="v4SplitDown">
+    <div class="goodPath"><span>↓</span><small>VERIFIED → cierre</small></div>
+    <div class="badPath"><span>↓</span><small>NO CUMPLE → corregir</small></div>
   </div>
 
-  <div class="phaseDown">↓</div>
-
-  <div class="flowPhase">
-    <div class="phaseHeader"><span>3</span><div><b>Contexto y ejecución</b><small>Se arma el contexto mínimo y el agente ejecuta con modelo o herramientas.</small></div></div>
-    <div class="simpleFlow">
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-context"><b>Context Manager</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-memory"><b>Memory Manager</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-knowledge"><b>Knowledge Manager</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-agentruntime"><b>Agent Runtime</b></a>
+  <section class="v4DualStage">
+    <div class="v4Stage closeStage" id="runtime-phase-6">
+      <div class="v4Head"><span>6</span><div><b>Cierre y continuidad</b><small>Sólo recibe resultados que ya superaron QA.</small></div></div>
+      <div class="v4Vertical">
+        <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-audit"><b>Audit Engine</b><small>consolida trazabilidad</small></a>
+        <div class="v4Arrow vertical">↓</div>
+        <a class="v4Node " href="../orchestrator-handbook-final/governance.html#fn-pmo"><b>PMO</b><small>actualiza estado, riesgo y próxima acción</small></a>
+        <div class="v4Arrow vertical">↓</div>
+        <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-checkpoint"><b>Checkpoint / Resume</b><small>persiste estado reanudable</small></a>
+        <div class="v4Arrow vertical">↓</div>
+        <div class="v4Node static user"><b>Resultado al usuario</b><small>resultado validado + estado final</small></div>
+      </div>
     </div>
-    <div class="executionSplit">
-      <div class="execLane"><div class="laneLabel">Inferencia local</div><a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-modelgw"><b>Model Gateway</b></a><i>→</i><a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-llama"><b>llama-server</b></a></div>
-      <div class="execLane"><div class="laneLabel">Acciones reales</div><a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-toolgw"><b>Tool Gateway</b></a><div class="microNote">Antes de ejecutar: <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-permission"><b>Permission</b></a> + <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-policy"><b>Policy</b></a></div></div>
+
+    <div class="v4Stage errorStage" id="runtime-phase-5">
+      <div class="v4Head"><span>5</span><div><b>Error, RCA, corrección y aprendizaje</b><small>El fallo confirmado debe producir corrección y un control para evitar recurrencia.</small></div></div>
+      <div class="v4Vertical">
+        <a class="v4Node " href="../orchestrator-handbook-final/governance.html#fn-errorreg"><b>Error Registry</b><small>expected / observed / evidence</small></a>
+        <div class="v4Arrow vertical">↓</div>
+        <a class="v4Node " href="../orchestrator-handbook-final/governance.html#fn-rca"><b>RCA</b><small>causa raíz cuando corresponde</small></a>
+        <div class="v4Arrow vertical">↓</div>
+        <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-workflow"><b>Corrección controlada</b><small>nuevo intento con cambio explícito</small></a>
+        <div class="v4Arrow vertical">↓</div>
+        <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-learning"><b>Learning Engine</b><small>genera control preventivo</small></a>
+        <div class="v4Arrow vertical">↓</div>
+        <a class="v4Node " href="../orchestrator-handbook-final/governance.html#fn-golden"><b>Golden Task / Regression</b><small>demuestra no recurrencia</small></a>
+        <div class="v4Arrow vertical">↓</div>
+        <a class="v4Node " href="../orchestrator-handbook-final/governance.html#fn-lessons"><b>Lessons Learned</b><small>persiste aprendizaje</small></a>
+      </div>
+      <a class="v4Return" href="../orchestrator-handbook-final/core.html#fn-verify">↺ Retest obligatorio: volver a Verification Engine → QA Engine</a>
     </div>
-    <div class="mergeArrow">↘ &nbsp;&nbsp;&nbsp; ↙</div>
-    <div class="centerNode"><a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-structured"><b>Structured Output</b><small>Validación del schema de salida</small></a></div>
-  </div>
+  </section>
 
-  <div class="phaseDown">↓</div>
-
-  <div class="flowPhase">
-    <div class="phaseHeader"><span>4</span><div><b>Verificación y calidad</b><small>El resultado debe superar controles objetivos antes de poder cerrarse.</small></div></div>
-    <div class="simpleFlow centered">
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-verify"><b>Verification Engine</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-qaengine"><b>QA Engine</b></a><i>→</i>
-      <div class="flowDecision">¿VERIFIED?</div>
+  <section class="v4Stage transverseStage" id="runtime-phase-7">
+    <div class="v4Head"><span>7</span><div><b>Servicios transversales</b><small>No son una cadena secuencial. Intervienen durante distintas fases y por eso se muestran fuera de las flechas principales.</small></div></div>
+    <div class="transverseGrid">
+      <a class="v4Node " href="../orchestrator-handbook-final/governance.html#fn-cyber"><b>Cybersecurity</b><small>secure-by-design y pre-PROD</small></a>
+      <a class="v4Node " href="../orchestrator-handbook-final/governance.html#fn-cy-gate"><b>Security Gate</b><small>control de release</small></a>
+      <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-securitybus"><b>Security Event Bus</b><small>eventos operacionales</small></a>
+      <a class="v4Node " href="../orchestrator-handbook-final/governance.html#fn-secops"><b>SecOps</b><small>monitor y respuesta</small></a>
+      <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-resource"><b>Resource Manager</b><small>RAM, contexto y capacidad</small></a>
+      <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-config"><b>Configuration Manager</b><small>config central</small></a>
+      <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-artifact"><b>Artifact Manager</b><small>outputs y provenance</small></a>
+      <a class="v4Node " href="../orchestrator-handbook-final/core.html#fn-path"><b>Path Resolver</b><small>rutas lógicas</small></a>
+      <a class="v4Node " href="../orchestrator-handbook-final/infrastructure.html#fn-st-degraded"><b>Degraded Mode</b><small>continuidad sin TIER-1</small></a>
     </div>
-    <div class="branchGrid qaBranches">
-      <div class="branch yesBranch"><span>SÍ</span><b>Resultado validado</b><small>Puede continuar al cierre y continuidad.</small></div>
-      <div class="branch errorBranch"><span>NO</span><b>Activar corrección</b><small>Se abre el ciclo de error, RCA y aprendizaje.</small></div>
-    </div>
-  </div>
+  </section>
 
-  <div class="phaseDown errorDown">↓ NO / ERROR</div>
-
-  <div class="flowPhase errorPhase">
-    <div class="phaseHeader"><span>5</span><div><b>Error, corrección y aprendizaje</b><small>El fallo confirmado se transforma en una corrección verificable y un control preventivo.</small></div></div>
-    <div class="simpleFlow errorFlow">
-      <a class="flowNode" href="../orchestrator-handbook-final/governance.html#fn-errorreg"><b>Error Registry</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/governance.html#fn-rca"><b>RCA</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/governance.html#fn-lessons"><b>Lessons Learned</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-learning"><b>Learning Engine</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/governance.html#fn-golden"><b>Golden Tasks</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-workflow"><b>Corrección controlada</b></a>
-    </div>
-    <a class="returnLoop" href="../orchestrator-handbook-final/core.html#fn-verify">↺ Volver a Verification Engine y repetir la validación</a>
-  </div>
-
-  <div class="phaseDown goodDown">↓ CUANDO QA = VERIFIED</div>
-
-  <div class="flowPhase">
-    <div class="phaseHeader"><span>6</span><div><b>Cierre, auditoría y continuidad</b><small>Se registra el resultado y se conserva suficiente estado para continuar el proyecto.</small></div></div>
-    <div class="simpleFlow centered">
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-audit"><b>Audit Engine</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/governance.html#fn-pmo"><b>PMO</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-checkpoint"><b>Checkpoint / Resume</b></a><i>→</i>
-      <div class="flowNode resultNode"><b>Resultado al usuario</b></div>
-    </div>
-  </div>
-
-  <div class="phaseDown">↓</div>
-
-  <div class="flowPhase supportPhase">
-    <div class="phaseHeader"><span>7</span><div><b>Controles transversales y soporte operacional</b><small>No son una cadena del flujo principal: operan de forma transversal cuando corresponde.</small></div></div>
-    <div class="supportGrid">
-      <a class="flowNode" href="../orchestrator-handbook-final/governance.html#fn-cyber"><b>Cybersecurity</b><small>Diseño seguro y threat modeling</small></a>
-      <a class="flowNode" href="../orchestrator-handbook-final/governance.html#fn-cy-gate"><b>Security Gate</b><small>Bloquea releases inseguros</small></a>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-securitybus"><b>Security Event Bus</b><small>Eventos de seguridad</small></a>
-      <a class="flowNode" href="../orchestrator-handbook-final/governance.html#fn-secops"><b>SecOps</b><small>Protección en runtime</small></a>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-resource"><b>Resource Manager</b><small>RAM y capacidad</small></a>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-path"><b>Path Resolver</b><small>Rutas y storage</small></a>
-      <a class="flowNode" href="../orchestrator-handbook-final/infrastructure.html#fn-st-degraded"><b>Degraded Mode</b><small>Continuidad sin TIER-1</small></a>
-    </div>
+  <div class="v4Legend">
+    <div><span class="lg good"></span><b>Ruta aprobada</b><small>puede continuar</small></div>
+    <div><span class="lg bad"></span><b>Ruta bloqueada/corrección</b><small>no puede cerrar</small></div>
+    <div><span class="lg control"></span><b>Control transversal</b><small>no implica secuencia</small></div>
+    <div><b>Todos los bloques con borde azul son clickeables.</b><small>Abren su ficha técnica y desde allí puedes volver al Flow Manual.</small></div>
   </div>
 </div>
-<div class="callout" style="margin-top:12px"><b>Regla central:</b> el flujo se divide en fases para que ninguna conexión atraviese bloques o se solape con otra. Los controles transversales se documentan aparte en vez de dibujar cables cruzando todo el sistema.</div></section>
+<div class="callout" style="margin-top:12px">
+<b>Cómo leer este flujo:</b> las flechas representan únicamente secuencia real. Los servicios transversales no se conectan con cables decorativos para evitar ambigüedad. Una rama bloqueada no continúa; una rama de error vuelve obligatoriamente a Verification + QA después de la corrección.
+</div></section>
 
 <section id="build" class="section"><div class="eyebrow">Diagrama 2</div><h2>Flujo de construcción del proyecto greenfield</h2><p>Orden de implementación. El Orchestrator actual queda intacto y sólo sirve como referencia opcional.</p>
 <div class="phaseFlow">
