@@ -52,11 +52,11 @@ footer{border-top:1px solid #203946;padding:18px;text-align:center;color:#8097a4
     <div class="phaseHeader"><span>1</span><div><b>Entrada y planificación</b><small>La solicitud se convierte en trabajo planificado y ejecutable.</small></div></div>
     <div class="simpleFlow">
       <div class="flowNode static"><b>Usuario</b></div><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-task"><b>Task Manager</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-planner"><b>Task Planner</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-teams"><b>Team Manager</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-registry"><b>Agent Registry</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-scheduler"><b>Scheduler</b></a>
+      <a class="flowNode" href="../orchestrator-handbook-v2/core.html#entity-task"><b>Task Manager</b></a><i>→</i>
+      <a class="flowNode" href="../orchestrator-handbook-v2/core.html#entity-planner"><b>Task Planner</b></a><i>→</i>
+      <a class="flowNode" href="../orchestrator-handbook-v2/core.html#entity-teams"><b>Team Manager</b></a><i>→</i>
+      <a class="flowNode" href="../orchestrator-handbook-v2/core.html#entity-registry"><b>Agent Registry</b></a><i>→</i>
+      <a class="flowNode" href="../orchestrator-handbook-v2/core.html#entity-scheduler"><b>Scheduler</b></a>
     </div>
   </div>
 
@@ -65,15 +65,15 @@ footer{border-top:1px solid #203946;padding:18px;text-align:center;color:#8097a4
   <div class="flowPhase">
     <div class="phaseHeader"><span>2</span><div><b>Orquestación, políticas y aprobación</b><small>Antes de ejecutar, el sistema resuelve reglas y autoridad.</small></div></div>
     <div class="simpleFlow">
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-workflow"><b>Workflow Engine</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-permission"><b>Permission Engine</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-policy"><b>Policy Engine</b></a><i>→</i>
+      <a class="flowNode" href="../orchestrator-handbook-v2/workflow-engine.html"><b>Workflow Engine</b></a><i>→</i>
+      <a class="flowNode" href="../orchestrator-handbook-v2/permission-engine.html"><b>Permission Engine</b></a><i>→</i>
+      <a class="flowNode" href="../orchestrator-handbook-v2/core.html#entity-policy"><b>Policy Engine</b></a><i>→</i>
       <div class="flowDecision">¿Requiere<br>aprobación?</div>
     </div>
     <div class="branchGrid">
       <div class="branch noBranch"><span>NO</span><b>Continuar</b><small>La política permite seguir sin intervención humana.</small></div>
       <div class="branch yesBranch"><span>SÍ</span>
-        <div class="branchFlow"><a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-approval"><b>Approval Engine</b></a><i>→</i><div class="flowNode humanNode"><b>Decisión humana</b><small>APPROVE / REJECT</small></div><i>→</i><div class="flowNode static"><b>Continuar</b></div></div>
+        <div class="branchFlow"><a class="flowNode" href="../orchestrator-handbook-v2/core.html#entity-approval"><b>Approval Engine</b></a><i>→</i><div class="flowNode humanNode"><b>Decisión humana</b><small>APPROVE / REJECT</small></div><i>→</i><div class="flowNode static"><b>Continuar</b></div></div>
       </div>
     </div>
   </div>
@@ -83,17 +83,17 @@ footer{border-top:1px solid #203946;padding:18px;text-align:center;color:#8097a4
   <div class="flowPhase">
     <div class="phaseHeader"><span>3</span><div><b>Contexto y ejecución</b><small>Se arma el contexto mínimo y el agente ejecuta con modelo o herramientas.</small></div></div>
     <div class="simpleFlow">
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-context"><b>Context Manager</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-memory"><b>Memory Manager</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-knowledge"><b>Knowledge Manager</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-agentruntime"><b>Agent Runtime</b></a>
+      <a class="flowNode" href="../orchestrator-handbook-v2/context-manager.html"><b>Context Manager</b></a><i>→</i>
+      <a class="flowNode" href="../orchestrator-handbook-v2/core.html#entity-memory"><b>Memory Manager</b></a><i>→</i>
+      <a class="flowNode" href="../orchestrator-handbook-v2/core.html#entity-knowledge"><b>Knowledge Manager</b></a><i>→</i>
+      <a class="flowNode" href="../orchestrator-handbook-v2/runtime.html#entity-agentruntime"><b>Agent Runtime</b></a>
     </div>
     <div class="executionSplit">
-      <div class="execLane"><div class="laneLabel">Inferencia local</div><a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-modelgw"><b>Model Gateway</b></a><i>→</i><a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-llama"><b>llama-server</b></a></div>
-      <div class="execLane"><div class="laneLabel">Acciones reales</div><a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-toolgw"><b>Tool Gateway</b></a><div class="microNote">Antes de ejecutar: <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-permission"><b>Permission</b></a> + <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-policy"><b>Policy</b></a></div></div>
+      <div class="execLane"><div class="laneLabel">Inferencia local</div><a class="flowNode" href="../orchestrator-handbook-v2/runtime.html#entity-modelgw"><b>Model Gateway</b></a><i>→</i><a class="flowNode" href="../orchestrator-handbook-v2/runtime.html#entity-llama"><b>llama-server</b></a></div>
+      <div class="execLane"><div class="laneLabel">Acciones reales</div><a class="flowNode" href="../orchestrator-handbook-v2/runtime.html#entity-toolgw"><b>Tool Gateway</b></a><div class="microNote">Antes de ejecutar: <a class="flowNode" href="../orchestrator-handbook-v2/permission-engine.html"><b>Permission</b></a> + <a class="flowNode" href="../orchestrator-handbook-v2/core.html#entity-policy"><b>Policy</b></a></div></div>
     </div>
     <div class="mergeArrow">↘ &nbsp;&nbsp;&nbsp; ↙</div>
-    <div class="centerNode"><a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-structured"><b>Structured Output</b><small>Validación del schema de salida</small></a></div>
+    <div class="centerNode"><a class="flowNode" href="../orchestrator-handbook-v2/runtime.html#entity-structured"><b>Structured Output</b><small>Validación del schema de salida</small></a></div>
   </div>
 
   <div class="phaseDown">↓</div>
@@ -101,8 +101,8 @@ footer{border-top:1px solid #203946;padding:18px;text-align:center;color:#8097a4
   <div class="flowPhase">
     <div class="phaseHeader"><span>4</span><div><b>Verificación y calidad</b><small>El resultado debe superar controles objetivos antes de poder cerrarse.</small></div></div>
     <div class="simpleFlow centered">
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-verify"><b>Verification Engine</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-qaengine"><b>QA Engine</b></a><i>→</i>
+      <a class="flowNode" href="../orchestrator-handbook-v2/core.html#entity-verify"><b>Verification Engine</b></a><i>→</i>
+      <a class="flowNode" href="../orchestrator-handbook-v2/core.html#entity-qaengine"><b>QA Engine</b></a><i>→</i>
       <div class="flowDecision">¿VERIFIED?</div>
     </div>
     <div class="branchGrid qaBranches">
@@ -116,14 +116,14 @@ footer{border-top:1px solid #203946;padding:18px;text-align:center;color:#8097a4
   <div class="flowPhase errorPhase">
     <div class="phaseHeader"><span>5</span><div><b>Error, corrección y aprendizaje</b><small>El fallo confirmado se transforma en una corrección verificable y un control preventivo.</small></div></div>
     <div class="simpleFlow errorFlow">
-      <a class="flowNode" href="../orchestrator-handbook-final/governance.html#fn-errorreg"><b>Error Registry</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/governance.html#fn-rca"><b>RCA</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/governance.html#fn-lessons"><b>Lessons Learned</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-learning"><b>Learning Engine</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/governance.html#fn-golden"><b>Golden Tasks</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-workflow"><b>Corrección controlada</b></a>
+      <a class="flowNode" href="../orchestrator-handbook-v2/quality.html#entity-errorreg"><b>Error Registry</b></a><i>→</i>
+      <a class="flowNode" href="../orchestrator-handbook-v2/quality.html#entity-rca"><b>RCA</b></a><i>→</i>
+      <a class="flowNode" href="../orchestrator-handbook-v2/quality.html#entity-lessons"><b>Lessons Learned</b></a><i>→</i>
+      <a class="flowNode" href="../orchestrator-handbook-v2/core.html#entity-learning"><b>Learning Engine</b></a><i>→</i>
+      <a class="flowNode" href="../orchestrator-handbook-v2/quality.html#entity-golden"><b>Golden Tasks</b></a><i>→</i>
+      <a class="flowNode" href="../orchestrator-handbook-v2/workflow-engine.html"><b>Corrección controlada</b></a>
     </div>
-    <a class="returnLoop" href="../orchestrator-handbook-final/core.html#fn-verify">↺ Volver a Verification Engine y repetir la validación</a>
+    <a class="returnLoop" href="../orchestrator-handbook-v2/core.html#entity-verify">↺ Volver a Verification Engine y repetir la validación</a>
   </div>
 
   <div class="phaseDown goodDown">↓ CUANDO QA = VERIFIED</div>
@@ -131,9 +131,9 @@ footer{border-top:1px solid #203946;padding:18px;text-align:center;color:#8097a4
   <div class="flowPhase">
     <div class="phaseHeader"><span>6</span><div><b>Cierre, auditoría y continuidad</b><small>Se registra el resultado y se conserva suficiente estado para continuar el proyecto.</small></div></div>
     <div class="simpleFlow centered">
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-audit"><b>Audit Engine</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/governance.html#fn-pmo"><b>PMO</b></a><i>→</i>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-checkpoint"><b>Checkpoint / Resume</b></a><i>→</i>
+      <a class="flowNode" href="../orchestrator-handbook-v2/core.html#entity-audit"><b>Audit Engine</b></a><i>→</i>
+      <a class="flowNode" href="../orchestrator-handbook-v2/core.html#entity-pmo"><b>PMO</b></a><i>→</i>
+      <a class="flowNode" href="../orchestrator-handbook-v2/workflows.html#entity-checkpoint"><b>Checkpoint / Resume</b></a><i>→</i>
       <div class="flowNode resultNode"><b>Resultado al usuario</b></div>
     </div>
   </div>
@@ -143,13 +143,13 @@ footer{border-top:1px solid #203946;padding:18px;text-align:center;color:#8097a4
   <div class="flowPhase supportPhase">
     <div class="phaseHeader"><span>7</span><div><b>Controles transversales y soporte operacional</b><small>No son una cadena del flujo principal: operan de forma transversal cuando corresponde.</small></div></div>
     <div class="supportGrid">
-      <a class="flowNode" href="../orchestrator-handbook-final/governance.html#fn-cyber"><b>Cybersecurity</b><small>Diseño seguro y threat modeling</small></a>
-      <a class="flowNode" href="../orchestrator-handbook-final/governance.html#fn-cy-gate"><b>Security Gate</b><small>Bloquea releases inseguros</small></a>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-securitybus"><b>Security Event Bus</b><small>Eventos de seguridad</small></a>
-      <a class="flowNode" href="../orchestrator-handbook-final/governance.html#fn-secops"><b>SecOps</b><small>Protección en runtime</small></a>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-resource"><b>Resource Manager</b><small>RAM y capacidad</small></a>
-      <a class="flowNode" href="../orchestrator-handbook-final/core.html#fn-path"><b>Path Resolver</b><small>Rutas y storage</small></a>
-      <a class="flowNode" href="../orchestrator-handbook-final/infrastructure.html#fn-st-degraded"><b>Degraded Mode</b><small>Continuidad sin TIER-1</small></a>
+      <a class="flowNode" href="../orchestrator-handbook-v2/cybersecurity.html#entity-cyber"><b>Cybersecurity</b><small>Diseño seguro y threat modeling</small></a>
+      <a class="flowNode" href="../orchestrator-handbook-v2/cybersecurity.html#entity-cy-gate"><b>Security Gate</b><small>Bloquea releases inseguros</small></a>
+      <a class="flowNode" href="../orchestrator-handbook-v2/core.html#entity-securitybus"><b>Security Event Bus</b><small>Eventos de seguridad</small></a>
+      <a class="flowNode" href="../orchestrator-handbook-v2/secops.html#entity-secops"><b>SecOps</b><small>Protección en runtime</small></a>
+      <a class="flowNode" href="../orchestrator-handbook-v2/core.html#entity-resource"><b>Resource Manager</b><small>RAM y capacidad</small></a>
+      <a class="flowNode" href="../orchestrator-handbook-v2/path-resolver.html"><b>Path Resolver</b><small>Rutas y storage</small></a>
+      <a class="flowNode" href="../orchestrator-handbook-v2/storage.html#entity-st-degraded"><b>Degraded Mode</b><small>Continuidad sin TIER-1</small></a>
     </div>
   </div>
 </div>
@@ -157,17 +157,17 @@ footer{border-top:1px solid #203946;padding:18px;text-align:center;color:#8097a4
 
 <section id="build" class="section"><div class="eyebrow">Diagrama 2</div><h2>Flujo de construcción del proyecto greenfield</h2><p>Orden de implementación. El Orchestrator actual queda intacto y sólo sirve como referencia opcional.</p>
 <div class="phaseFlow">
-<a class="phase" href="../orchestrator-handbook-final/implementation.html#fn-imp0"><span>0</span><b>Preflight</b><small>Host, macOS, storage, toolchain y benchmarks</small></a>
+<a class="phase" href="../orchestrator-handbook-v2/implementation.html#entity-imp0"><span>0</span><b>Preflight</b><small>Host, macOS, storage, toolchain y benchmarks</small></a>
 <div class="phaseArrow">↓</div>
-<a class="phase" href="../orchestrator-handbook-final/implementation.html#fn-imp1"><span>1</span><b>Fundaciones</b><small>Config, Path Resolver, DB v1, migrations, estados, audit</small></a>
+<a class="phase" href="../orchestrator-handbook-v2/implementation.html#entity-imp1"><span>1</span><b>Fundaciones</b><small>Config, Path Resolver, DB v1, migrations, estados, audit</small></a>
 <div class="phaseArrow">↓</div>
-<a class="phase" href="../orchestrator-handbook-final/implementation.html#fn-imp2"><span>2</span><b>Runtime</b><small>llama adapter, model process, resource, agents, scheduler, workflow</small></a>
+<a class="phase" href="../orchestrator-handbook-v2/implementation.html#entity-imp2"><span>2</span><b>Runtime</b><small>llama adapter, model process, resource, agents, scheduler, workflow</small></a>
 <div class="phaseArrow">↓</div>
-<a class="phase" href="../orchestrator-handbook-final/governance.html#fn-imp3"><span>3–7</span><b>Gobierno y controles</b><small>PMO, permisos, approvals, context, memory, QA, cybersecurity, SecOps</small></a>
+<a class="phase" href="../orchestrator-handbook-v2/implementation.html#entity-imp3"><span>3–7</span><b>Gobierno y controles</b><small>PMO, permisos, approvals, context, memory, QA, cybersecurity, SecOps</small></a>
 <div class="phaseArrow">↓</div>
-<a class="phase" href="../orchestrator-handbook-final/implementation.html#fn-imp4"><span>8–9</span><b>MVP y PROD local</b><small>Software Engineering MVP, acceptance, release y producción local</small></a>
+<a class="phase" href="../orchestrator-handbook-v2/implementation.html#entity-imp4"><span>8–9</span><b>MVP y PROD local</b><small>Software Engineering MVP, acceptance, release y producción local</small></a>
 <div class="phaseArrow">↓</div>
-<a class="phase finalPhase" href="../orchestrator-handbook-final/teams.html#fn-agents"><span>10</span><b>Expansión</b><small>Incorporar progresivamente equipos y casos de uso</small></a>
+<a class="phase finalPhase" href="../orchestrator-handbook-v2/teams.html#entity-agents"><span>10</span><b>Expansión</b><small>Incorporar progresivamente equipos y casos de uso</small></a>
 </div></section>
 
 <section id="infra" class="section"><div class="eyebrow">Diagrama 3</div><h2>Infraestructura física y lógica</h2><p>La arquitectura separa control/estado crítico de volumen/capacidad. El Core debe seguir disponible aunque TIER-1 esté temporalmente ausente.</p><div class="diagramHint"><b>Lectura:</b> el detalle completo está en la ficha enlazada; el diagrama mantiene etiquetas cortas para conservar la legibilidad.</div><div class="diagramWrap"><svg class="infraSvg" viewBox="0 0 1500 770" role="img" aria-label="Infraestructura física y lógica">
@@ -177,26 +177,26 @@ footer{border-top:1px solid #203946;padding:18px;text-align:center;color:#8097a4
 
 <rect class="tier0" x="80" y="120" width="610" height="500" rx="20"/>
 <text x="110" y="155" class="tierTitle">TIER-0 · SSD INTERNO · CONTROL Y ESTADO CRÍTICO</text>
-<a href="../orchestrator-handbook-final/infrastructure.html#fn-dep-dev" class="svgLink"><g class="node"><rect x="115" y="190" width="170" height="62" rx="12"/><text x="200" y="215" class="nodeTitle" text-anchor="middle">DEV</text><title>DEV — Desarrollo experimental aislado.</title></g></a>
-<a href="../orchestrator-handbook-final/infrastructure.html#fn-dep-test" class="svgLink"><g class="node"><rect x="315" y="190" width="170" height="62" rx="12"/><text x="400" y="215" class="nodeTitle" text-anchor="middle">TEST</text><title>TEST — Pruebas reproducibles.</title></g></a>
-<a href="../orchestrator-handbook-final/infrastructure.html#fn-dep-prod" class="svgLink"><g class="node"><rect x="515" y="190" width="170" height="62" rx="12"/><text x="600" y="215" class="nodeTitle" text-anchor="middle">PROD</text><title>PROD — Versión estable local.</title></g></a>
-<a href="../orchestrator-handbook-final/core.html#fn-modelproc" class="svgLink"><g class="node"><rect x="115" y="295" width="170" height="62" rx="12"/><text x="200" y="320" class="nodeTitle" text-anchor="middle">Model Process</text><title>Model Process Manager — Arranca y controla llama-server.</title></g></a>
-<a href="../orchestrator-handbook-final/core.html#fn-audit" class="svgLink"><g class="node"><rect x="315" y="295" width="170" height="62" rx="12"/><text x="400" y="320" class="nodeTitle" text-anchor="middle">Audit Engine</text><title>Audit Engine — Conserva trazabilidad append-only.</title></g></a>
-<a href="../orchestrator-handbook-final/core.html#fn-checkpoint" class="svgLink"><g class="node"><rect x="515" y="295" width="170" height="62" rx="12"/><text x="600" y="320" class="nodeTitle" text-anchor="middle">Checkpoint / Resume</text><title>Checkpoint / Resume — Persiste el estado técnico para reanudar.</title></g></a>
-<a href="../orchestrator-handbook-final/core.html#fn-path" class="svgLink"><g class="node"><rect x="115" y="400" width="170" height="62" rx="12"/><text x="200" y="425" class="nodeTitle" text-anchor="middle">Path Resolver</text><title>Path Resolver — Resuelve rutas lógicas y controla límites de storage.</title></g></a>
-<a href="../orchestrator-handbook-final/core.html#fn-pmo" class="svgLink"><g class="node"><rect x="315" y="400" width="170" height="62" rx="12"/><text x="400" y="425" class="nodeTitle" text-anchor="middle">PMO</text><title>PMO — Mantiene estado, decisiones, riesgos y continuidad.</title></g></a>
-<a href="../orchestrator-handbook-final/core.html#fn-resource" class="svgLink"><g class="node"><rect x="515" y="400" width="170" height="62" rx="12"/><text x="600" y="425" class="nodeTitle" text-anchor="middle">Resource Manager</text><title>Resource Manager — Protege RAM, contexto y capacidad del host.</title></g></a>
+<a href="../orchestrator-handbook-v2/deployment.html#entity-dep-dev" class="svgLink"><g class="node"><rect x="115" y="190" width="170" height="62" rx="12"/><text x="200" y="215" class="nodeTitle" text-anchor="middle">DEV</text><title>DEV — Desarrollo experimental aislado.</title></g></a>
+<a href="../orchestrator-handbook-v2/deployment.html#entity-dep-test" class="svgLink"><g class="node"><rect x="315" y="190" width="170" height="62" rx="12"/><text x="400" y="215" class="nodeTitle" text-anchor="middle">TEST</text><title>TEST — Pruebas reproducibles.</title></g></a>
+<a href="../orchestrator-handbook-v2/deployment.html#entity-dep-prod" class="svgLink"><g class="node"><rect x="515" y="190" width="170" height="62" rx="12"/><text x="600" y="215" class="nodeTitle" text-anchor="middle">PROD</text><title>PROD — Versión estable local.</title></g></a>
+<a href="../orchestrator-handbook-v2/runtime.html#entity-modelproc" class="svgLink"><g class="node"><rect x="115" y="295" width="170" height="62" rx="12"/><text x="200" y="320" class="nodeTitle" text-anchor="middle">Model Process</text><title>Model Process Manager — Arranca y controla llama-server.</title></g></a>
+<a href="../orchestrator-handbook-v2/core.html#entity-audit" class="svgLink"><g class="node"><rect x="315" y="295" width="170" height="62" rx="12"/><text x="400" y="320" class="nodeTitle" text-anchor="middle">Audit Engine</text><title>Audit Engine — Conserva trazabilidad append-only.</title></g></a>
+<a href="../orchestrator-handbook-v2/workflows.html#entity-checkpoint" class="svgLink"><g class="node"><rect x="515" y="295" width="170" height="62" rx="12"/><text x="600" y="320" class="nodeTitle" text-anchor="middle">Checkpoint / Resume</text><title>Checkpoint / Resume — Persiste el estado técnico para reanudar.</title></g></a>
+<a href="../orchestrator-handbook-v2/path-resolver.html" class="svgLink"><g class="node"><rect x="115" y="400" width="170" height="62" rx="12"/><text x="200" y="425" class="nodeTitle" text-anchor="middle">Path Resolver</text><title>Path Resolver — Resuelve rutas lógicas y controla límites de storage.</title></g></a>
+<a href="../orchestrator-handbook-v2/core.html#entity-pmo" class="svgLink"><g class="node"><rect x="315" y="400" width="170" height="62" rx="12"/><text x="400" y="425" class="nodeTitle" text-anchor="middle">PMO</text><title>PMO — Mantiene estado, decisiones, riesgos y continuidad.</title></g></a>
+<a href="../orchestrator-handbook-v2/core.html#entity-resource" class="svgLink"><g class="node"><rect x="515" y="400" width="170" height="62" rx="12"/><text x="600" y="425" class="nodeTitle" text-anchor="middle">Resource Manager</text><title>Resource Manager — Protege RAM, contexto y capacidad del host.</title></g></a>
 <rect class="plainBox" x="220" y="520" width="330" height="62" rx="12"/><text x="385" y="546" text-anchor="middle">DB activa · config · migrations</text><text x="385" y="566" class="nodeSub" text-anchor="middle">colas · locks · logs recientes</text>
 
 <rect class="tier1" x="760" y="120" width="610" height="500" rx="20"/>
 <text x="790" y="155" class="tierTitle">TIER-1 · SSD EXTERNO RÁPIDO · VOLUMEN Y CAPACIDAD</text>
-<a href="../orchestrator-handbook-final/core.html#fn-models" class="svgLink"><g class="node"><rect x="795" y="190" width="170" height="62" rx="12"/><text x="880" y="215" class="nodeTitle" text-anchor="middle">Model Lifecycle</text><title>Ciclo de vida, evaluación y promoción de modelos — Gestiona modelos como activos versionados y evaluados.</title></g></a>
-<a href="../orchestrator-handbook-final/core.html#fn-knowledge" class="svgLink"><g class="node"><rect x="995" y="190" width="170" height="62" rx="12"/><text x="1080" y="215" class="nodeTitle" text-anchor="middle">Knowledge Manager</text><title>Knowledge Manager — Recupera conocimiento y fuentes autorizadas.</title></g></a>
-<a href="../orchestrator-handbook-final/core.html#fn-artifact" class="svgLink"><g class="node"><rect x="1195" y="190" width="170" height="62" rx="12"/><text x="1280" y="215" class="nodeTitle" text-anchor="middle">Artifact Manager</text><title>Artifact Manager — Versiona resultados, hashes y provenance.</title></g></a>
+<a href="../orchestrator-handbook-v2/runtime.html#entity-models" class="svgLink"><g class="node"><rect x="795" y="190" width="170" height="62" rx="12"/><text x="880" y="215" class="nodeTitle" text-anchor="middle">Model Lifecycle</text><title>Ciclo de vida, evaluación y promoción de modelos — Gestiona modelos como activos versionados y evaluados.</title></g></a>
+<a href="../orchestrator-handbook-v2/core.html#entity-knowledge" class="svgLink"><g class="node"><rect x="995" y="190" width="170" height="62" rx="12"/><text x="1080" y="215" class="nodeTitle" text-anchor="middle">Knowledge Manager</text><title>Knowledge Manager — Recupera conocimiento y fuentes autorizadas.</title></g></a>
+<a href="../orchestrator-handbook-v2/core.html#entity-artifact" class="svgLink"><g class="node"><rect x="1195" y="190" width="170" height="62" rx="12"/><text x="1280" y="215" class="nodeTitle" text-anchor="middle">Artifact Manager</text><title>Artifact Manager — Versiona resultados, hashes y provenance.</title></g></a>
 <rect class="plainBox" x="795" y="295" width="170" height="62" rx="12"/><text x="880" y="321" text-anchor="middle">Datasets</text><text x="880" y="341" class="nodeSub" text-anchor="middle">multimedia / corpus</text>
 <rect class="plainBox" x="995" y="295" width="170" height="62" rx="12"/><text x="1080" y="321" text-anchor="middle">Caches pesadas</text><text x="1080" y="341" class="nodeSub" text-anchor="middle">logs históricos</text>
 <rect class="plainBox" x="1195" y="295" width="170" height="62" rx="12"/><text x="1280" y="321" text-anchor="middle">Backups TIER-0</text><text x="1280" y="341" class="nodeSub" text-anchor="middle">snapshots / modelos</text>
-<a href="../orchestrator-handbook-final/infrastructure.html#fn-st-degraded" class="svgLink"><g class="node"><rect x="995" y="430" width="190" height="62" rx="12"/><text x="1090" y="455" class="nodeTitle" text-anchor="middle">Degraded Mode</text><title>Degraded Mode — Mantiene Core disponible y bloquea dependencias externas.</title></g></a>
+<a href="../orchestrator-handbook-v2/storage.html#entity-st-degraded" class="svgLink"><g class="node"><rect x="995" y="430" width="190" height="62" rx="12"/><text x="1090" y="455" class="nodeTitle" text-anchor="middle">Degraded Mode</text><title>Degraded Mode — Mantiene Core disponible y bloquea dependencias externas.</title></g></a>
 
 <path class="infraLine" d="M 690 370 L 760 370" marker-end="url(#arrow2)"/>
 <g class="edgePill"><rect x="672" y="337" width="106" height="22" rx="11"/><text x="725" y="352" class="edgeLabel" text-anchor="middle">ORCH_EXT_ROOT</text></g>
@@ -205,14 +205,14 @@ footer{border-top:1px solid #203946;padding:18px;text-align:center;color:#8097a4
 </svg></div></section>
 
 <section id="controls" class="section"><div class="eyebrow">Controles transversales</div><h2>Lo que atraviesa todo el flujo</h2><div class="quick">
-<a href="../orchestrator-handbook-final/core.html#fn-permission"><b>Permission + Policy</b><span>Mínimo privilegio, deny-by-default y control de tools.</span></a>
-<a href="../orchestrator-handbook-final/core.html#fn-approval"><b>Human-in-the-loop</b><span>Pagos, contratos, borrados irreversibles, publicaciones sensibles y despliegues críticos.</span></a>
-<a href="../orchestrator-handbook-final/core.html#fn-qaengine"><b>QA + Verification</b><span>El creador no se autoaprueba; evidencia y tests superan consenso.</span></a>
-<a href="../orchestrator-handbook-final/governance.html#fn-cy-gate"><b>Security Gate</b><span>Un release FAIL no puede pasar a PROD.</span></a>
-<a href="../orchestrator-handbook-final/governance.html#fn-secops"><b>SecOps</b><span>Monitores determinísticos, eventos y respuesta L1/L2/L3.</span></a>
-<a href="../orchestrator-handbook-final/core.html#fn-pmo"><b>PMO + Source of Truth</b><span>Estado, riesgos, decisiones y continuidad sin depender del chat.</span></a>
-<a href="../orchestrator-handbook-final/core.html#fn-checkpoint"><b>Checkpoint / Resume</b><span>Reanudación desde el último punto seguro.</span></a>
-<a href="../orchestrator-handbook-final/infrastructure.html#fn-st-degraded"><b>Graceful Degradation</b><span>Core disponible; dependencias externas bloqueadas de forma explícita.</span></a>
+<a href="../orchestrator-handbook-v2/permission-engine.html"><b>Permission + Policy</b><span>Mínimo privilegio, deny-by-default y control de tools.</span></a>
+<a href="../orchestrator-handbook-v2/core.html#entity-approval"><b>Human-in-the-loop</b><span>Pagos, contratos, borrados irreversibles, publicaciones sensibles y despliegues críticos.</span></a>
+<a href="../orchestrator-handbook-v2/core.html#entity-qaengine"><b>QA + Verification</b><span>El creador no se autoaprueba; evidencia y tests superan consenso.</span></a>
+<a href="../orchestrator-handbook-v2/cybersecurity.html#entity-cy-gate"><b>Security Gate</b><span>Un release FAIL no puede pasar a PROD.</span></a>
+<a href="../orchestrator-handbook-v2/secops.html#entity-secops"><b>SecOps</b><span>Monitores determinísticos, eventos y respuesta L1/L2/L3.</span></a>
+<a href="../orchestrator-handbook-v2/core.html#entity-pmo"><b>PMO + Source of Truth</b><span>Estado, riesgos, decisiones y continuidad sin depender del chat.</span></a>
+<a href="../orchestrator-handbook-v2/workflows.html#entity-checkpoint"><b>Checkpoint / Resume</b><span>Reanudación desde el último punto seguro.</span></a>
+<a href="../orchestrator-handbook-v2/storage.html#entity-st-degraded"><b>Graceful Degradation</b><span>Core disponible; dependencias externas bloqueadas de forma explícita.</span></a>
 </div></section>
 
 <section class="section sources"><div class="eyebrow">Trazabilidad documental</div><h2>Documentos de la baseline usados para construir este flowchart</h2>
