@@ -90,7 +90,7 @@ svg text{user-select:none}
   <p id="papplication"></p>
   <ul id="pdetails"></ul>
   <div style="margin-top:18px;background:#132431;border:1px solid #2d5368;border-radius:10px;padding:12px">
-    <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#8fd6df;margin:0 0 7px">Ejemplo concreto</h3><p id="pexample" style="margin:0"></p>
+    <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#8fd6df;margin:0 0 7px">Ejemplo ficticio paso a paso</h3><div style="font-size:11px;color:#92abb8;margin-bottom:8px">Todos los nombres y situaciones de los ejemplos son ficticios y sólo sirven para explicar cómo funcionaría el sistema.</div><p id="pexample" style="margin:0"></p>
   </div>
   <div style="margin-top:12px;background:#251b18;border:1px solid #654338;border-radius:10px;padding:12px">
     <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#e4b299;margin:0 0 7px">Error típico</h3><p id="perror" style="margin:0"></p>
@@ -151,6 +151,50 @@ function el(name,attrs={}){
 }
 
 
+
+
+function fictionalScenario(route,title){
+  if(route.includes("Comunicaciones")){
+    return "CASO FICTICIO — La Fundación Horizonte prepara un comunicado por la apertura de una nueva sede. El periodista redacta un primer borrador con fecha, autoridades y cifras entregadas por la organización. Fact-check detecta que una cantidad mencionada no aparece en ninguna fuente y la marca como no verificada. El editor corrige el texto, el Director de Comunicaciones aprueba la versión final y sólo entonces Prensa y RRSS publican adaptaciones del mismo contenido. Resultado: se difunde una versión trazable y sin datos inventados.";
+  }
+  if(route.includes("Ingeniería de Software")||route.includes("Software")){
+    return "CASO FICTICIO — Se crea TASK-SW-042: agregar reanudación de tareas largas. Product Manager define que un workflow debe poder detenerse tras el paso 3. Arquitectura especifica qué datos persistir. Backend implementa la función en el repositorio greenfield nuevo. QA pausa una tarea de prueba, reinicia el servicio y comprueba que continúe desde el paso 4. Code Review encuentra un dato que no quedaba persistido, se corrige y se repite la prueba. Sólo después de pasar QA la tarea puede cerrarse. El Orchestrator antiguo permanece intacto.";
+  }
+  if(route.includes("PMO")||route.includes("Gerencia del Proyecto")){
+    return "CASO FICTICIO — El viernes se termina Path Resolver, pero queda pendiente medir el SSD externo. PMO registra Path Resolver como DONE con evidencia, deja el benchmark como NOT_STARTED, anota la dependencia del SSD y guarda como próxima acción “ejecutar benchmark”. El lunes el usuario escribe RETOMAR PROYECTO. PMO lee checkpoint, backlog y decisiones y responde exactamente qué se terminó, qué falta y cuál es el siguiente paso, sin depender del historial del chat.";
+  }
+  if(route.includes("QA")||route.toLowerCase().includes("calidad")||route.includes("Verificación")){
+    return "CASO FICTICIO — Se implementa una función que exige aprobación humana antes de ejecutar una acción sensible. QA prepara tres pruebas: una operación normal que debe completarse sin aprobación, una operación sensible que debe quedar WAITING_APPROVAL y un intento de continuar sin aprobación que debe ser bloqueado. En la segunda prueba el sistema avanza incorrectamente. QA abre un finding, devuelve la tarea a corrección y repite las tres pruebas después del arreglo. La función sólo queda VERIFIED cuando los tres resultados coinciden con lo esperado.";
+  }
+  if(route.includes("Ciberseguridad")){
+    return "CASO FICTICIO — Una nueva herramienta permite guardar archivos generados por los agentes. Funcionalmente pasa QA, pero Ciberseguridad detecta que la configuración autoriza más ubicaciones de las necesarias. Se abre un finding HIGH y Security Gate bloquea la promoción. Software restringe el alcance de la herramienta, Ciberseguridad repite la revisión y confirma que sólo puede escribir dentro del directorio autorizado. Recién entonces el finding se cierra y la versión puede continuar.";
+  }
+  if(route.includes("SecOps")||route.includes("Operaciones de seguridad")){
+    return "CASO FICTICIO — Un monitor detecta que un proceso nuevo comenzó a escuchar en un puerto que no figura en la configuración. Se genera un evento con hora, proceso y puerto. SecOps revisa si pertenece a una tarea autorizada y descubre que un servicio DEV quedó configurado para escuchar más allá de lo previsto. Se pausa la tarea, se corrige la configuración, se reinicia el servicio y se verifica que el puerto ya no esté expuesto. El incidente queda cerrado con causa, acción y evidencia.";
+  }
+  if(route.includes("Almacenamiento")){
+    return "CASO FICTICIO — El modelo principal reside en el SSD externo dentro de ORCH_EXT_ROOT. Antes de iniciar llama-server, Preflight verifica que el volumen correcto esté montado, que su identificador coincida y que exista espacio suficiente. Durante una sesión el SSD se desconecta. PMO y la base de datos siguen funcionando desde el SSD interno, pero una nueva tarea que necesita el modelo queda BLOCKED_EXTERNAL_STORAGE. El sistema informa el problema y espera a que vuelva el volumen correcto; no copia automáticamente el modelo al disco interno.";
+  }
+  if(route.includes("Flujos de trabajo")||route.includes("Workflow")||route.toLowerCase().includes("orquestación")){
+    return "CASO FICTICIO — El usuario pide una nueva pantalla para ver el estado de los agentes. Planner divide el trabajo en requisito, arquitectura, backend, frontend, pruebas y QA. Frontend implementa la vista, pero QA descubre que un agente en VERIFYING aparece como RUNNING. El workflow vuelve sólo al paso de corrección, mantiene los pasos anteriores como válidos y conserva el checkpoint. Después del arreglo se repiten las pruebas afectadas y la tarea recién entonces pasa a DONE.";
+  }
+  if(route.includes("Runtime")||route.includes("IA Local")||route.toLowerCase().includes("modelo")){
+    return "CASO FICTICIO — Una tarea necesita revisar tres archivos de código. Scheduler activa un agente lógico de revisión. Agent Runtime le entrega sólo esos archivos, el prompt del rol y herramientas de lectura y prueba. Model Gateway usa el modelo local mediante llama-server. El agente intenta realizar una acción que su rol no tiene autorizada; Permission Engine la bloquea y el agente debe limitarse a emitir un finding. El resultado vuelve al workflow con su task_id y la evidencia de la revisión.";
+  }
+  if(route.includes("Finanzas")){
+    return "CASO FICTICIO — La empresa ficticia Andes Digital compara dos propuestas de proveedores. El agente financiero calcula diferencias y recomienda la alternativa más conveniente. Después se crea una segunda solicitud que implicaría una acción financiera real. El sistema la clasifica como APPROVAL_REQUIRED y la deja en WAITING_APPROVAL. Aunque los agentes coincidan en la recomendación, la acción no puede continuar hasta que el usuario la apruebe explícitamente.";
+  }
+  if(route.includes("Comercial")){
+    return "CASO FICTICIO — La Clínica Bosque Norte solicita una propuesta por 25 licencias. CRM entrega el contacto y Pricing encuentra el precio vigente. Ventas prepara la propuesta, pero no puede confirmar disponibilidad. En vez de inventarla, escribe “pendiente de confirmar”. Sales QA revisa cálculo, precio y condiciones. Cuando la fuente de disponibilidad vuelve a estar disponible, se crea una segunda versión de la propuesta con el dato confirmado.";
+  }
+  if(route.includes("Contenidos")){
+    return "CASO FICTICIO — Content Studio recibe un video master de ocho minutos. Repurposing selecciona tres fragmentos; Guión adapta cada uno a 45 segundos; Subtítulos genera y revisa el texto; Platform Specialist prepara versiones para distintas redes; Brand Guardian detecta una frase exagerada y la reemplaza por una formulación técnicamente correcta. Cada archivo queda versionado y vinculado al master original.";
+  }
+  if(route.includes("Implementación")||route.includes("Fase")){
+    return "CASO FICTICIO — Día 1 del proyecto greenfield: se registra el estado del Mac y se valida el SSD externo. Luego se crea un repositorio Git completamente nuevo, un venv DEV nuevo y las rutas ORCH_LOCAL_ROOT y ORCH_EXT_ROOT. En la siguiente etapa se crea la base de datos desde schema v1 y migration 0001. El Orchestrator actual se mantiene intacto; si se consulta una idea antigua, se documenta como referencia y se reimplementa desde cero.";
+  }
+  return "CASO FICTICIO — Se crea TASK-DEMO-001 para una necesidad que requiere "+title+". El Orchestrator registra objetivo, restricciones y criterios de aceptación, entrega sólo el contexto necesario a este componente y ejecuta su responsabilidad. Si el resultado no cumple lo esperado, la tarea queda bloqueada o vuelve a corrección; si cumple, avanza al siguiente paso. El caso es ilustrativo y no describe una ejecución real.";
+}
 
 function buildContextGuide(n){
   const subject=n._guideSubject || n;
@@ -228,6 +272,7 @@ function buildContextGuide(n){
     error="Copiar el directorio del Orchestrator actual y empezar a modificarlo hasta convertirlo gradualmente en el nuevo sistema.";
     evidence="Repositorio nuevo, commits iniciales, venv/config nuevos, mediciones de preflight, migration 0001 y checkpoint PMO.";
   }
+  example=fictionalScenario(route,title);
   return {definition,application,example,error,evidence};
 }
 
@@ -239,7 +284,7 @@ function ensureGuideChildren(n){
   n.children=[
     make("def","Qué significa",g.definition,"definition"),
     make("app","Cómo se aplica en este proyecto",g.application,"application"),
-    make("ex","Ejemplo concreto",g.example,"example"),
+    make("ex","Ejemplo ficticio paso a paso",g.example,"example"),
     make("err","Error típico",g.error,"error"),
     make("ev","Evidencia esperada",g.evidence,"evidence")
   ];
