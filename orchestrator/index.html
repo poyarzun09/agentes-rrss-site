@@ -90,7 +90,13 @@ svg text{user-select:none}
   <p id="papplication"></p>
   <ul id="pdetails"></ul>
   <div style="margin-top:18px;background:#132431;border:1px solid #2d5368;border-radius:10px;padding:12px">
-    <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#8fd6df;margin:0 0 7px">Ejemplo ficticio paso a paso</h3><div style="font-size:11px;color:#92abb8;margin-bottom:8px">Todos los nombres y situaciones de los ejemplos son ficticios y sólo sirven para explicar cómo funcionaría el sistema.</div><p id="pexample" style="margin:0"></p>
+    <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#8fd6df;margin:0 0 9px">Caso ficticio detallado</h3>
+    <div style="font-size:11px;color:#92abb8;margin-bottom:10px">Los nombres, IDs, empresas y datos de este caso son ficticios. Su único objetivo es mostrar cómo funcionaría esta parte del sistema.</div>
+    <div style="font-weight:700;color:#cfe8ed;margin:8px 0 4px">Situación</div><p id="pcaseContext" style="margin:0 0 10px;line-height:1.55"></p>
+    <div style="font-weight:700;color:#cfe8ed;margin:8px 0 4px">Datos ficticios</div><ul id="pcaseData" style="margin-top:4px"></ul>
+    <div style="font-weight:700;color:#cfe8ed;margin:8px 0 4px">Paso a paso</div><ol id="pcaseSteps" style="padding-left:20px;color:#c4d1d9;line-height:1.5"></ol>
+    <div style="font-weight:700;color:#cfe8ed;margin:8px 0 4px">Resultado esperado</div><p id="pcaseResult" style="margin:0 0 10px;line-height:1.55"></p>
+    <div style="font-weight:700;color:#e4b299;margin:8px 0 4px">Si algo falla</div><p id="pcaseFailure" style="margin:0;line-height:1.55"></p>
   </div>
   <div style="margin-top:12px;background:#251b18;border:1px solid #654338;border-radius:10px;padding:12px">
     <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#e4b299;margin:0 0 7px">Error típico</h3><p id="perror" style="margin:0"></p>
@@ -358,6 +364,187 @@ function fictionalScenario(route,title,parentTitle){
   return "CASO FICTICIO — TASK-DEMO-001 llega al componente «"+title+"» dentro de "+parent+". El sistema registra qué información recibe, qué regla aplica y qué resultado espera. Si el resultado no cumple la condición definida, la tarea no avanza; si cumple, deja evidencia y entrega una salida estructurada al siguiente paso. El escenario es ficticio y sirve sólo para explicar esta rama.";
 }
 
+
+function buildDetailedCase(n){
+  const subject=n._guideSubject || n;
+  const title=subject.title||"este elemento";
+  const parent=(subject._parent&&subject._parent.title)||"el componente padre";
+  const route=(subject._path||[title]).join(" > ");
+  const t=title.toLowerCase();
+
+  let context="Empresa ficticia NovaSur Digital está usando el Orchestrator v4.0 en un entorno TEST. Se crea una tarea de demostración relacionada con «"+title+"» dentro de «"+parent+"».";
+  let data=[
+    "Tarea ficticia: TASK-DEMO-104",
+    "Entorno: TEST",
+    "Componente: "+parent,
+    "Elemento evaluado: "+title
+  ];
+  let steps=[
+    "El Orchestrator registra el objetivo y comprueba que la tarea tenga las entradas mínimas.",
+    "El componente «"+parent+"» procesa específicamente la responsabilidad «"+title+"».",
+    "El resultado se compara con la condición esperada y se registra el estado.",
+    "Si cumple, el workflow continúa; si no, queda bloqueado o vuelve a corrección."
+  ];
+  let result="La tarea termina con una salida estructurada y trazable que el siguiente componente puede consumir sin tener que interpretar una explicación ambigua.";
+  let failure="Si falta información, la regla no se cumple o el resultado no puede verificarse, el sistema no inventa una respuesta: registra la causa y detiene o devuelve el flujo.";
+  let evidence=[
+    "task_id y step_id",
+    "entrada utilizada",
+    "estado antes y después",
+    "resultado estructurado",
+    "timestamp y referencias de auditoría"
+  ];
+
+  if(t==="entradas"){
+    context="Empresa ficticia NovaSur Digital crea TASK-221 para revisar una nueva función. El nodo «Entradas» pertenece a «"+parent+"» y representa exactamente lo que debe existir antes de empezar.";
+    data=["Requisito RF-031 aprobado","Diff del commit C-881","Resultado de tests TEST-44","Política de permisos v2.3"];
+    steps=[
+      "Workflow Engine consulta cuáles son las entradas obligatorias de «"+parent+"».",
+      "Encuentra requisito, diff y tests, pero detecta que falta la política de permisos.",
+      "En vez de pedir al LLM que improvise, cambia el step a BLOCKED_INPUT_MISSING.",
+      "Cuando aparece la política v2.3, valida versión y procedencia y recién entonces habilita la ejecución."
+    ];
+    result="«"+parent+"» comienza sólo cuando dispone de todas las entradas obligatorias y verificadas.";
+    failure="Si el sistema ejecutara con una entrada faltante, el agente podría completar el vacío por su cuenta y producir una conclusión aparentemente razonable pero no sustentada.";
+    evidence=["lista de inputs requeridos","input faltante detectado","estado BLOCKED_INPUT_MISSING","versión/procedencia de cada entrada","momento en que se habilitó el step"];
+  } else if(t.includes("proceso")||t.includes("decisión")){
+    context="TASK-222 llega a «"+parent+"» con todas sus entradas. Ahora debe decidir si el resultado puede continuar, corregirse o bloquearse.";
+    data=["status previo: RUNNING","regla R-17: requisito obligatorio","resultado observado: requisito incompleto"];
+    steps=[
+      "«"+parent+"» evalúa la regla R-17 contra la información recibida.",
+      "Detecta que una condición obligatoria no se cumple.",
+      "Genera una decisión estructurada: status=CORRECT, reason=REQUIREMENT_MISSING.",
+      "Workflow Engine devuelve la tarea al step responsable y conserva el resto del checkpoint."
+    ];
+    result="La decisión tiene una transición explícita y un motivo que otro componente puede ejecutar automáticamente.";
+    failure="Una respuesta como «no está del todo bien» sería inútil porque no define qué estado corresponde ni qué debe ocurrir después.";
+    evidence=["regla evaluada","valor observado","decisión estructurada","reason code","transición realizada"];
+  } else if(t==="salida"||t==="salidas"){
+    context="«"+parent+"» termina su trabajo sobre TASK-223. El nodo «Salida» define qué recibe el siguiente step.";
+    data=["artifact: ART-031","finding: ninguno","QA status: VERIFIED"];
+    steps=[
+      "El componente reúne su resultado final.",
+      "Lo convierte a un schema conocido por el workflow.",
+      "Entrega status=VERIFIED, artifact_ref=ART-031, next_action=CONTINUE.",
+      "El siguiente step consume esos campos directamente."
+    ];
+    result="El flujo continúa sin depender de interpretar frases libres como «todo parece correcto».";
+    failure="Si la salida fuera sólo texto narrativo, cada componente siguiente tendría que inferir qué significa y aumentaría el riesgo de errores.";
+    evidence=["schema utilizado","payload de salida","artifact_ref","status","next_action"];
+  } else if(t.includes("evidencia")){
+    context="TASK-224 fue evaluada por «"+parent+"». Alguien revisará esa decisión una semana después y necesita demostrar por qué se permitió avanzar.";
+    data=["input de prueba ficticio","resultado esperado","resultado observado","tool output TEST-908"];
+    steps=[
+      "El sistema guarda el input exacto utilizado.",
+      "Conserva el resultado de la herramienta o prueba que sustenta la decisión.",
+      "Vincula ambos registros con TASK-224 y el step correspondiente.",
+      "QA puede reconstruir posteriormente qué ocurrió sin depender de memoria humana."
+    ];
+    result="La afirmación «la prueba pasó» queda respaldada por datos concretos y recuperables.";
+    failure="Sin evidencia, sólo quedaría una conclusión no demostrable y no sería posible auditar ni reproducir la validación.";
+    evidence=["input","expected","observed","tool output","task_id/step_id","timestamp"];
+  } else if(t.includes("requisit")){
+    context="NovaSur Digital solicita que cualquier acción financiera real necesite aprobación humana. Ese deseo general debe convertirse en requisitos comprobables.";
+    data=["RF-071: análisis financiero sin aprobación","RF-072: pago requiere aprobación","RF-073: sin aprobación no existe ejecución"];
+    steps=[
+      "Product/Planner convierte la intención en tres requisitos separados.",
+      "QA asocia un caso de prueba a cada requisito.",
+      "El sistema prueba análisis normal, solicitud de pago e intento sin aprobación.",
+      "Sólo cuando los tres comportamientos coinciden con lo esperado se consideran satisfechos."
+    ];
+    result="El requisito deja de ser una frase vaga y se transforma en condiciones objetivas que pueden demostrarse.";
+    failure="Un requisito como «que las finanzas sean seguras» no permite decidir técnicamente si la implementación cumple o no.";
+    evidence=["ID de requisito","criterios de aceptación","casos de prueba","resultado esperado/observado","estado de cumplimiento"];
+  } else if(t.includes("revisión independiente")){
+    context="DEV_AGENT_03 implementa una modificación al Permission Engine. Como autor del cambio, no puede ser quien lo apruebe definitivamente.";
+    data=["commit ficticio C-944","reviewer REVIEW_AGENT_01","tests TEST-201 a TEST-207"];
+    steps=[
+      "Workflow asigna la revisión a REVIEW_AGENT_01.",
+      "Reviewer inspecciona diff, requisito y tests.",
+      "Detecta que CANCELLED→RUNNING quedó permitida por error y abre FIND-022.",
+      "DEV_AGENT_03 corrige el problema y el reviewer repite la validación."
+    ];
+    result="La separación entre creador y revisor detecta un defecto que la implementación original había pasado por alto.";
+    failure="Si el mismo agente se autoaprobara, podría repetir su propia suposición incorrecta y cerrar el trabajo sin una segunda mirada.";
+    evidence=["autor del cambio","reviewer distinto","finding","corrección","re-review","decisión final"];
+  } else if(t.includes("checkpoint")||t.includes("punto de control")){
+    context="TASK-310 tiene ocho pasos y ya completó los tres primeros. El usuario apaga el Mac al terminar el día.";
+    data=["workflow_version: 1.4","current_step: 4","artifacts: ART-50, ART-51","decision: DEC-12"];
+    steps=[
+      "Checkpoint Service persiste step actual, artifacts, decisiones y hashes.",
+      "Al día siguiente el Orchestrator inicia y localiza el checkpoint.",
+      "Valida que artifacts y versiones sigan siendo válidos.",
+      "Reanuda desde el paso 4 sin repetir los pasos 1–3."
+    ];
+    result="La tarea continúa desde un punto seguro y reproducible.";
+    failure="Si sólo existiera un resumen textual tipo «íbamos por la mitad», el sistema no sabría qué pasos están realmente validados.";
+    evidence=["checkpoint_id","workflow/version","current_step","artifact hashes","decisiones","next_action"];
+  } else if(t.includes("aprobación")){
+    context="La empresa ficticia Andes Digital analiza una compra y luego solicita ejecutar una acción sensible.";
+    data=["acción ficticia: ACT-77","riesgo: HIGH","approval: APR-0047"];
+    steps=[
+      "Permission Engine clasifica la acción como APPROVAL_REQUIRED.",
+      "Approval Engine crea APR-0047 y pone el workflow en WAITING_APPROVAL.",
+      "Los agentes pueden explicar la acción, pero ninguno puede aprobarla por consenso.",
+      "Sólo una decisión humana explícita cambia APR-0047 a APPROVED o REJECTED."
+    ];
+    result="La autoridad final permanece en el usuario para acciones críticas.";
+    failure="Un timeout, silencio o acuerdo entre agentes nunca debe interpretarse como autorización.";
+    evidence=["acción solicitada","clasificación de riesgo","approval_id","decisión humana","timestamp"];
+  } else if(t.includes("dependenc")){
+    context="El step Frontend depende de que Arquitectura haya aprobado el contrato API.";
+    data=["STEP-03 Contrato API: IN_REVIEW","STEP-04 Frontend: QUEUED"];
+    steps=[
+      "Scheduler revisa dependencias antes de activar Frontend.",
+      "Detecta que STEP-03 todavía no está DONE.",
+      "Mantiene STEP-04 en QUEUED y no consume modelo ni herramientas.",
+      "Cuando STEP-03 pasa a DONE, vuelve a evaluar y habilita STEP-04."
+    ];
+    result="El sistema evita construir sobre un prerequisito todavía inestable.";
+    failure="Activar Frontend antes del contrato podría generar retrabajo o incompatibilidades.";
+    evidence=["dependency graph","estado del prerequisito","estado del step bloqueado","momento de desbloqueo"];
+  } else if(route.includes("Comunicaciones")){
+    context="Fundación Horizonte, organización ficticia, prepara una comunicación pública relacionada con «"+title+"».";
+    data=["borrador v1","ficha oficial del evento","declaración aprobada","canales: prensa y RRSS"];
+    steps=[
+      "El equipo recibe antecedentes oficiales y define qué parte corresponde a «"+title+"».",
+      "Se redacta o procesa el contenido bajo esa responsabilidad específica.",
+      "Fact-check y Editor verifican hechos y claridad cuando corresponde.",
+      "La versión final se aprueba antes de cualquier difusión externa."
+    ];
+    result="Se publica una pieza coherente con los hechos y con la posición institucional.";
+    failure="Una cifra no respaldada o una declaración inventada obliga a devolver el contenido a corrección.";
+    evidence=["fuentes","versión del contenido","revisión","aprobación","canal publicado"];
+  } else if(route.includes("Software")||route.includes("Ingeniería de Software")){
+    context="El equipo ficticio desarrolla «"+title+"» dentro del nuevo repositorio greenfield.";
+    data=["TASK-SW-101","repo: NUEVO_ORCHESTRATOR","entorno: DEV"];
+    steps=[
+      "Se define el comportamiento esperado de «"+title+"».",
+      "El agente responsable implementa sólo en el repositorio nuevo.",
+      "Tests y revisión comprueban el comportamiento.",
+      "QA decide si el cambio puede avanzar a TEST."
+    ];
+    result="La función queda implementada y verificada sin modificar el Orchestrator antiguo.";
+    failure="Modificar el proyecto legado o cerrar sin pruebas viola el alcance greenfield.";
+    evidence=["requisito","commit","tests","review","QA status"];
+  } else if(route.includes("PMO")){
+    context="PMO necesita mantener «"+title+"» actualizado para que el proyecto pueda retomarse después.";
+    data=["proyecto: Agentia","checkpoint ficticio CP-044","fecha ficticia: 2026-10-15"];
+    steps=[
+      "PMO recibe únicamente avances demostrados y decisiones realmente tomadas.",
+      "Actualiza el registro específico de «"+title+"».",
+      "Relaciona el cambio con evidencia o tarea.",
+      "Al ejecutar RETOMAR PROYECTO, ese registro participa en reconstruir el estado."
+    ];
+    result="El estado del proyecto se recupera desde persistencia y no desde recuerdos de una conversación.";
+    failure="Registrar progreso supuesto o desactualizado haría que el PMO reanude desde un estado falso.";
+    evidence=["registro PMO","task relacionada","fecha","owner","checkpoint"];
+  }
+
+  return {context,data,steps,result,failure,evidence,route};
+}
+
+
 function buildContextGuide(n){
   const subject=n._guideSubject || n;
   const route=(subject._path||[subject.title]).join(" > ");
@@ -384,20 +571,7 @@ function buildContextGuide(n){
   return {definition,application,example,error,evidence};
 }
 
-function ensureGuideChildren(n){
-  if((n.children||[]).length || n.guideLeaf) return;
-  const g=buildContextGuide(n), b=(n.id||"node")+"-guide";
-  const make=(suffix,title,summary,type)=>({id:b+"-"+suffix,title,summary,details:[],children:[],guideLeaf:true,guideType:type,_guideSubject:n});
-  n.application=g.application;n.example=g.example;n.error=g.error;n.evidence=g.evidence;
-  n.children=[
-    make("def","Qué significa",g.definition,"definition"),
-    make("app","Cómo se aplica en este proyecto",g.application,"application"),
-    make("ex","Ejemplo ficticio paso a paso",g.example,"example"),
-    make("err","Error típico",g.error,"error"),
-    make("ev","Evidencia esperada",g.evidence,"evidence")
-  ];
-  walk(n,n._parent,n._parent?n._parent._path:[]);
-}
+function ensureGuideChildren(n){ return; }
 
 function render(){
   svg.innerHTML='';
@@ -416,7 +590,7 @@ function render(){
     const t=el('text',{x:12,y:28});
     let label=n.title.length>46?n.title.slice(0,45)+'…':n.title;
     t.textContent=label; group.appendChild(t);
-    if((n.children||[]).length || !n.guideLeaf){
+    if((n.children||[]).length){
       const c=el('circle',{class:'toggle',cx:w+18,cy:23,r:12});
       const tt=el('text',{class:'toggleText',x:w+18,y:27,'text-anchor':'middle'});
       tt.textContent=collapsed.has(n.id)?'+':'−';
@@ -429,7 +603,6 @@ function render(){
 }
 
 function selectNode(n){
-  if(!(n.children||[]).length && !n.guideLeaf) ensureGuideChildren(n);
   selected=n;
   const guide=buildContextGuide(n._guideSubject || n);
   n.application=n.application||guide.application;
@@ -441,7 +614,6 @@ function selectNode(n){
   document.getElementById('ppath').textContent=n._path.join('  ›  ');
   document.getElementById('psummary').textContent=n.summary || 'Sin descripción adicional.';
   document.getElementById('papplication').textContent=n.application || '';
-  document.getElementById('pexample').textContent=n.example || '';
   document.getElementById('perror').textContent=n.error || '';
   document.getElementById('pevidence').textContent=n.evidence || '';
   const ul=document.getElementById('pdetails'); ul.innerHTML='';
