@@ -87,6 +87,26 @@ function overview(){return hero("Propuesta del proyecto","AGENTIA_PAOD: una empr
 '<h2 id="confiabilidad">Confiabilidad y mejora continua</h2>'+
 '<p>AGENTIA_PAOD contempla una arquitectura de <strong>Harness Engineering</strong> que combina contexto controlado, herramientas autorizadas, memoria y verificación. Los agentes ejecutores trabajan bajo supervisión de <strong>agentes auditores y controles independientes</strong>, que contrastan resultados con requisitos, fuentes y pruebas antes de aceptarlos.</p>'+
 '<p>El sistema incorpora <strong>autoaprendizaje gobernado</strong>: cuando se confirma un error, registra su causa, conserva la lección aprendida y propone controles o pruebas de regresión para reducir su repetición. Las mejoras se validan antes de promoverse; los cambios críticos siguen sujetos a autorización humana. Aprender no significa modificar autónomamente permisos o garantías de seguridad.</p>'+
+'<figure class="harness-flow" aria-labelledby="harness-title" aria-describedby="harness-desc">'+
+'<div class="harness-flow-head"><span class="harness-kicker">ARQUITECTURA DE CONFIABILIDAD · DISEÑO OBJETIVO</span><h3 id="harness-title">Verificación cruzada y aprendizaje continuo</h3><p id="harness-desc">Cada resultado se contrasta con evidencias antes de entregarse. Los errores confirmados alimentan controles para futuras tareas.</p></div>'+
+'<div class="harness-stage harness-stage--primary"><a href="?doc=runtime.html#entity-agentruntime" class="harness-node"><span class="harness-node-type">EJECUCIÓN</span><strong>Agente ejecutor</strong><span>Realiza la tarea y aporta fuentes y evidencias</span></a></div>'+
+'<div class="harness-flow-arrow" aria-hidden="true">↓</div>'+
+'<div class="harness-audit-row" role="group" aria-label="Dos controles independientes de revisión">'+
+'<a href="?doc=core.html#entity-qaengine" class="harness-node"><span class="harness-node-type">REVISIÓN INDEPENDIENTE</span><strong>Agente auditor</strong><span>Contrasta hechos, requisitos y contradicciones</span></a>'+
+'<a href="?doc=core.html#entity-verify" class="harness-node"><span class="harness-node-type">VERIFICACIÓN TÉCNICA</span><strong>Verification Engine</strong><span>Comprueba pruebas, esquemas y evidencias</span></a>'+
+'</div>'+
+'<div class="harness-flow-arrow" aria-hidden="true">↓</div>'+
+'<div class="harness-stage harness-stage--primary"><a href="?doc=core.html#entity-qaengine" class="harness-node harness-node--gate"><span class="harness-node-type">CONTROL DE CALIDAD</span><strong>Quality Gate</strong><span>Acepta, solicita correcciones, bloquea o escala según evidencia y políticas</span></a></div>'+
+'<div class="harness-flow-arrow" aria-hidden="true">↓</div>'+
+'<div class="harness-outcomes" role="group" aria-label="Resultados posibles de la verificación">'+
+'<div class="harness-outcome harness-outcome--accept"><span class="harness-outcome-symbol" aria-hidden="true">✓</span><strong>Aceptar</strong><span>Resultado validado y trazable</span></div>'+
+'<div class="harness-outcome harness-outcome--review"><span class="harness-outcome-symbol" aria-hidden="true">↻</span><strong>Corregir o escalar</strong><span>Se detecta un fallo o falta evidencia</span></div>'+
+'</div>'+
+'<div class="harness-learning-link"><span aria-hidden="true">↓</span><span>Ante un error confirmado</span></div>'+
+'<div class="harness-stage harness-stage--primary"><a href="?doc=core.html#entity-learning" class="harness-node harness-node--learning"><span class="harness-node-type">AUTOAPRENDIZAJE GOBERNADO</span><strong>Learning Engine</strong><span>Analiza la causa, registra la lección y propone pruebas de regresión y controles preventivos</span></a></div>'+
+'<div class="harness-feedback"><span class="harness-feedback-symbol" aria-hidden="true">↺</span><span><strong>Retroalimentación:</strong> las mejoras verificadas pasan a futuras ejecuciones. Los cambios críticos necesitan aprobación humana.</span></div>'+
+'<figcaption>Flujo arquitectónico previsto (TO-BE). No representa una función operativa o una tasa de precisión ya certificada.</figcaption>'+
+'</figure>'+
 '<div class="callout"><strong>Objetivo de calidad:</strong> alcanzar una tasa de alucinaciones factuales no detectadas <strong>igual o inferior al 1%</strong> en respuestas verificables entregadas, medida por dominio mediante evaluaciones independientes. <strong>Es una meta de diseño, aún no un resultado demostrado ni una garantía.</strong> También se medirán los rechazos y las solicitudes escaladas.</div>'+
 '<h2 id="alcance">Alcance del proyecto</h2>'+
 '<p><strong>Incluye en su arquitectura objetivo:</strong> Orchestrator y su interfaz, equipos y agentes configurables, planificación y workflows, PMO, permisos y aprobación humana, QA, memoria y conocimiento, herramientas, observabilidad, almacenamiento por niveles, seguridad, backups y recuperación, y entornos locales DEV/TEST/PROD.</p>'+
