@@ -41,18 +41,42 @@ const ROWS=[
 ["Calidad y auditoría","quality.html","Tests, evidencia y release gates"],
 ["Registro y trazabilidad","traceability.html","Requisito a prueba y estado"]
 ];
-function overview(){return hero("Portal de arquitectura integral","Documentar primero. Desarrollar después.","Entrada única a los diagramas, especificaciones y decisiones del Orchestrator Agéntico Local. Conserva el Handbook V2 y muestra los vacíos antes de implementar.")+
-'<div class="callout"><strong>Alcance:</strong> documentación de referencia del sistema completo. Las fichas existentes describen el diseño v4.0; el estado real del código y los gates debe verificarse por separado. Ningún requisito faltante se completa por suposición.</div>'+
-'<h2 id="rutas">Rutas principales</h2><div class="card-grid">'+[
-["flow","Diagrama de funcionamiento","FLUJO MAESTRO"],
-["teams.html","Departamentos y agentes","ORGANIZACIÓN"],
+function overview(){return hero("Propuesta del proyecto","AGENTIA_PAOD: una empresa multiagente, gobernada desde una sola interfaz","Diseño de una plataforma empresarial local de inteligencia artificial en la que una persona dirige, solicita y supervisa trabajos mientras el Orchestrator coordina departamentos, equipos y agentes especializados.")+
+'<h2 id="propuesta">La propuesta</h2>'+
+'<p>AGENTIA_PAOD nace de una idea: <strong>construir una empresa digital operada parcialmente por agentes de inteligencia artificial</strong>, organizada con una estructura de dirección, departamentos, equipos y especialistas. El usuario actúa como Dirección General: expresa necesidades y objetivos en lenguaje natural, revisa propuestas, toma decisiones y conserva la autoridad sobre las acciones críticas.</p>'+
+'<p>El propósito no es disponer de un simple chatbot ni de una colección aislada de asistentes. Es crear una <strong>plataforma de trabajo coordinado</strong> capaz de transformar una solicitud empresarial en un proceso planificado, asignado, ejecutado, revisado y documentado, con responsabilidades claras y resultados verificables.</p>'+
+'<h2 id="vision">Visión y valor esperado</h2>'+
+'<p>El sistema se proyecta con <strong>operación local y modelos de IA locales como base</strong>, inicialmente sobre un Mac Studio, para favorecer privacidad, control de los datos y menor dependencia estructural de servicios de IA pagados. Busca automatizar tareas, reutilizar conocimiento, estandarizar procesos, reducir trabajo repetitivo y mejorar la trazabilidad de las decisiones y entregables.</p>'+
+'<p>La plataforma no está limitada a redes sociales: su alcance abarca <strong>desarrollo de software, gestión comercial, comunicaciones, contenido multimedia, finanzas, gobierno y PMO, calidad, ciberseguridad y operaciones SecOps</strong>. Estos dominios forman parte de una arquitectura empresarial común; su despliegue funcional se realizará por etapas.</p>'+
+'<h2 id="modelo-empresa">Cómo se organiza la empresa agéntica</h2>'+
+'<div class="card-grid">'+
+'<div class="doc-card"><span class="eyebrow">DIRECCIÓN GENERAL</span><h3>El usuario mantiene el control</h3><p>Solicita informes, proyectos, estrategias o desarrollos; consulta su estado; aprueba, rechaza o redefine el trabajo cuando corresponde.</p></div>'+
+'<div class="doc-card"><span class="eyebrow">ORCHESTRATOR CENTRAL</span><h3>Interpreta y distribuye</h3><p>Conserva la intención de la solicitud, clasifica capacidades, consulta políticas y determina el equipo principal y los apoyos necesarios.</p></div>'+
+'<div class="doc-card"><span class="eyebrow">DEPARTAMENTOS Y ESPECIALISTAS</span><h3>Ejecutan según su función</h3><p>Gerentes, equipos y roles especializados participan mediante tareas, contratos, herramientas permitidas y responsabilidades definidas.</p></div>'+
+'<div class="doc-card"><span class="eyebrow">GOBIERNO TRANSVERSAL</span><h3>Coordina, verifica y protege</h3><p>PMO interviene cuando la política exige gestión sostenida; QA verifica; permisos, seguridad y aprobación humana controlan las acciones.</p></div></div>'+
+'<h2 id="funcionamiento">Cómo funcionará una solicitud</h2>'+
+'<ol class="guide-list"><li><strong>Solicitud:</strong> el usuario explica qué necesita desde la interfaz, sin seleccionar manualmente cada agente.</li>'+
+'<li><strong>Comprensión y clasificación:</strong> el Orchestrator identifica objetivo, restricciones, capacidades requeridas y datos faltantes; solicita aclaraciones cuando sea necesario.</li>'+
+'<li><strong>Enrutamiento dinámico:</strong> asigna un equipo <code>PRIMARY</code>, apoyos <code>SUPPORTING</code> y participaciones <code>CONDITIONAL</code> según capacidades y políticas, no por reglas rígidas basadas solo en palabras clave.</li>'+
+'<li><strong>Planificación y ejecución:</strong> organiza workflows y tareas; activa únicamente los agentes y herramientas autorizados para el trabajo.</li>'+
+'<li><strong>Supervisión:</strong> aplica QA, seguridad y aprobaciones. La PMO se activa de forma condicional cuando corresponde el modo <code>PMO_MANAGED</code>, no necesariamente para toda solicitud.</li>'+
+'<li><strong>Entrega y continuidad:</strong> devuelve resultados, evidencias, estado, riesgos y próximos pasos; conserva trazabilidad para revisiones posteriores.</li></ol>'+
+'<div class="callout"><strong>Ejemplo:</strong> «Necesito un informe de las ventas del mes». El Orchestrator debe identificar las capacidades comerciales necesarias, activar el área responsable y los apoyos pertinentes, comprobar si hay datos autorizados, y entregar un informe verificable o indicar qué información falta. La solicitud puede coordinar varios especialistas sin exigir al usuario conocer su estructura interna.</div>'+
+'<h2 id="alcance">Alcance del proyecto</h2>'+
+'<p><strong>Incluye en su arquitectura objetivo:</strong> Orchestrator y su interfaz, equipos y agentes configurables, planificación y workflows, PMO, permisos y aprobación humana, QA, memoria y conocimiento, herramientas, observabilidad, almacenamiento por niveles, seguridad, backups y recuperación, y entornos locales DEV/TEST/PROD.</p>'+
+'<p><strong>No implica autonomía ilimitada:</strong> decisiones financieras reales, firma de contratos, operaciones destructivas, elevación de privilegios y cambios críticos siguen sujetos a aprobación humana. Un despliegue VPS, alta disponibilidad multi-host e infraestructura LAN/WAN ampliada permanecen fuera del MVP inicial.</p>'+
+'<h2 id="desarrollo">De la propuesta a la implementación</h2>'+
+'<p>AGENTIA_PAOD es una <strong>arquitectura empresarial objetivo en preparación para desarrollo progresivo</strong>. El diseño organizacional v4.2-RC1 contempla nueve equipos y 93 fichas normativas de agentes. Esto describe responsabilidades de diseño, <strong>no 93 procesos autónomos ya funcionando</strong>. El desarrollo comenzará por las fundaciones y flujos demostrables y se ampliará sin perder la visión integral del sistema.</p>'+
+'<div class="callout warn"><strong>Estado actual:</strong> el Handbook documenta arquitectura y contratos, pero quedan decisiones y brechas de la auditoría V5. El runtime integral no está certificado como implementado. Esta página presenta la propuesta aprobada en su alcance documental, no un producto en producción.</div>'+
+'<h2 id="explorar">Explorar la documentación técnica</h2><div class="card-grid">'+[
+["flow","Mapa interactivo del funcionamiento","FLUJO MAESTRO"],
+["teams.html","Organización, equipos y agentes","ESTRUCTURA EMPRESARIAL"],
 ["core.html","Núcleo del Orchestrator","ARQUITECTURA"],
-["runtime.html","Modelos y runtime local","IA Y EJECUCIÓN"],
-["preparacion","Lista para construir","PRE-DESARROLLO"],
-["cobertura","Cobertura documental","ÍNDICE MAESTRO"]].map(i=>localLink(i[0],i[1],i[2])).join("")+'</div>'+
-'<h2 id="recorrido">Recorrido de una solicitud</h2><ol class="guide-list"><li>El usuario formula un objetivo desde su interfaz.</li><li>El Orchestrator interpreta la intención, consulta políticas y decide el enrutamiento.</li><li>Los equipos y especialistas asignados ejecutan tareas bajo permisos y contratos explícitos.</li><li>PMO realiza seguimiento cuando corresponda; QA controla evidencia y estado.</li><li>El resultado regresa al usuario con trazabilidad y aprobaciones cuando sean necesarias.</li></ol>'+
-'<p>Este recorrido es <strong>objetivo de diseño</strong>; los pasos operativos se especifican en el <a href="'+href("flow")+'">Flow Manual</a> y sus componentes vinculados.</p>'+
-'<h2 id="fuentes">Fuente documental existente</h2><p>El portal presenta directamente las páginas del <a href="'+href("index.html")+'">Handbook V2</a> y el <a href="'+href("flow")+'">Flow Manual</a> del mismo repositorio. No crea una arquitectura paralela.</p>';
+["runtime.html","Modelos y ejecución local","IA Y RUNTIME"],
+["cobertura","Alcance y cobertura del sistema","ÍNDICE MAESTRO"],
+["preparacion","Preparación para el desarrollo","DESARROLLO CONTROLADO"]].map(i=>localLink(i[0],i[1],i[2])).join("")+'</div>'+
+'<h2 id="referencias">Base documental de la propuesta</h2>'+
+'<p>Introducción derivada de las definiciones de <code>01_NEGOCIO_Y_ALCANCE/01_BUSINESS_CASE.md</code>, <code>02_ALCANCE_Y_EXCLUSIONES.md</code>, <code>00_GOBIERNO_Y_MAESTROS/01_MASTER_PLAN.md</code>, <code>03_ARQUITECTURA/01_ARQUITECTURA_EMPRESARIAL.md</code> y <code>49_DYNAMIC_ORGANIZATIONAL_ORCHESTRATION/</code> de la copia documental v4.2-RC1. Consulta el <a href="../orchestrator-handbook-v2/catalogo-v42.html">catálogo normativo v4.2</a> y el <a href="'+href("flow")+'">diagrama interactivo</a> para el detalle técnico.</p>';
 }
 function gettingStarted(){return hero("Guía de lectura","Cómo utilizar AGENTIA_PAOD Docs","Navega por el sistema desde una petición de negocio hasta cada parámetro técnico, identificando qué está definido, qué no y qué evidencia exige.")+
 '<h2 id="pasos">Secuencia recomendada</h2><ol class="guide-list"><li>Revisa la <a href="'+href("architecture.html")+'">visión y arquitectura</a> para conocer los límites del sistema.</li><li>Sigue el <a href="'+href("flow")+'">diagrama interactivo</a>: los nodos abren fichas del componente.</li><li>Consulta <a href="'+href("teams.html")+'">áreas y equipos</a> para comprender delegación, ownership y responsabilidades.</li><li>En cada ficha revisa relaciones, contratos, configuración, estados, seguridad, pruebas y fuentes primarias.</li><li>Completa las brechas en <a href="'+href("vacios")+'">requisitos por cerrar</a> antes de generar código.</li><li>Utiliza la <a href="'+href("preparacion")+'">matriz de preparación</a> para gobernar el inicio del desarrollo.</li></ol>'+
