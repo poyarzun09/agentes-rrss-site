@@ -11,7 +11,7 @@ const GROUPS = [
 {title:"Construcción, configuración y API",items:[["implementation.html","Plan de construcción"],["backend-developer.html","Desarrollo backend"],["deployment.html","Entornos y despliegue"],["operacion","Operación y configuración"]]},
 {title:"Infraestructura y protección",items:[["storage.html","Almacenamiento por niveles"],["cybersecurity.html","Seguridad y permisos"],["secops.html","SecOps del Mac Studio"]]},
 {title:"QA, auditoría y liberación",items:[["quality.html","Pruebas y calidad"],["audit-final.html","Auditoría documental"],["vacios","Brechas y requisitos por cerrar"]]},
-{title:"Índice de referencia",items:[["index.html","Handbook V2 — Índice original"],["registro","Registro y navegación"]]}
+{title:"Índice de referencia",items:[["catalogo-v42.html","Catálogo normativo v4.2: 93 agentes y 27 interfaces"],["index.html","Handbook V2 — Índice original"],["registro","Registro y navegación"]]}
 ];
 const VIRTUAL = new Set(["inicio","comenzar","cobertura","preparacion","operacion","vacios","registro"]);
 const ALL = GROUPS.flatMap(g=>g.items.map(a=>({id:a[0],label:a[1],group:g.title})));
